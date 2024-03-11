@@ -11,6 +11,7 @@ import (
 	"go/ast"
 	"go/doc"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -151,6 +152,8 @@ func (p *Package) renderOptions(innerPath string, sourceInfo *source.Info, modIn
 		if p.Line == 0 { // invalid Position
 			return ""
 		}
+		// resolve gop_autogen.go path
+		p.Filename = filepath.Base(p.Filename)
 		return sourceInfo.LineURL(path.Join(innerPath, p.Filename), p.Line)
 	}
 	fileLinkFunc := func(filename string) string {
