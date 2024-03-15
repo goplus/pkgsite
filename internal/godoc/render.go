@@ -115,17 +115,13 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 	}
 	var allGoFiles []*ast.File
 	for _, f := range p.Files {
-		if f.Name != "" {
-			allGoFiles = append(allGoFiles, f.AST)
-		}
+		allGoFiles = append(allGoFiles, f.AST)
 	}
 
 	d, err := doc.NewFromFiles(p.Fset, allGoFiles, importPath, m)
 	if err != nil {
 		return nil, fmt.Errorf("doc.NewFromFiles: %v", err)
 	}
-	FindOverloadFuncThenAdd(d)
-	FindOverloadFuncTypeThenRestoreName(d.Types)
 	if d.ImportPath != importPath {
 		panic(fmt.Errorf("internal error: *doc.Package has an unexpected import path (%q != %q)", d.ImportPath, importPath))
 	}
@@ -156,7 +152,7 @@ func (p *Package) renderOptions(innerPath string, sourceInfo *source.Info, modIn
 		if p.Line == 0 { // invalid Position
 			return ""
 		}
-		// resolve gop_autogen.go path
+		// gop: resolve path in //line: of gop_autogen.go
 		p.Filename = filepath.Base(p.Filename)
 		return sourceInfo.LineURL(path.Join(innerPath, p.Filename), p.Line)
 	}

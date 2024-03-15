@@ -1,14 +1,15 @@
-package godoc
+package gopdoc
 
 import (
 	"context"
 	"go/ast"
 	"go/doc"
-	"golang.org/x/pkgsite/internal/log"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+
+	"golang.org/x/pkgsite/internal/log"
 )
 
 var pattern string = `__\d+`
