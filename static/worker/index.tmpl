@@ -80,36 +80,7 @@
     </table>
   </div>
 
-  <div class="Experiments">
-    <h3>Experiments</h3>
-    {{if .Experiments}}
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Rollout</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{range .Experiments}}
-            <tr>
-              <td>{{.Name}}</td>
-              <td>{{.Description}}</td>
-              <td>{{.Rollout}}</td>
-            </tr>
-        {{end}}
-        </tbody>
-      </table>
-      <p>To update experiments, modify the {{.Env}}-config.yaml file and deploy with
-        the <code>-config-only</code> flag.</p>
-    {{else}}
-      <p>No experiments.</p>
-    {{end}}
-    <iframe class="Experiments-updateResult" name="experimentUpdateResult" id="experimentUpdateResult"></iframe>
-  </div>
-
-  <div>
+ <div>
     <h3>Memory (all values in Mi)</h3>
     <table>
       <tr>
@@ -166,6 +137,7 @@
           <th>Version</th>
           <th>Zip Size (Mi)</th>
           <th>Age</th>
+          <th>State</th>
         </tr>
       </thead>
       <tbody>
@@ -176,6 +148,7 @@
               <td>{{.Version}}</td>
               <td>{{.ZipSize | bytesToMi}}</td>
               <td>{{timeSince .Start}}</td>
+              <td>{{.RequestInfo.State.Load}}</td>
               {{with .RequestInfo.TraceID}}
                 <td><a href="{{logURL .}}" target="_blank" rel="noreferrer">Logs</a></td>
                 <td><a href="/cancel?trace={{.}}" target="_blank" rel="noreferrer">Cancel</a></td>
@@ -194,6 +167,7 @@
         <tr>
           <th>URL</th>
           <th>Age</th>
+          <th>State</th>
         </tr>
       </thead>
       <tbody>
@@ -201,6 +175,7 @@
           <tr>
             <td>{{.TrimmedURL}}</td>
             <td>{{timeSince .Start}}</td>
+            <td>{{.State.Load}}</td>
             {{with .TraceID}}
               <td><a href="{{logURL .}}" target="_blank" rel="noreferrer">Logs</a></td>
               <td><a href="/cancel?trace={{.}}" target="_blank" rel="noreferrer">Cancel</a></td>
@@ -211,6 +186,34 @@
     </table>
   </div>
 
+  <div class="Experiments">
+    <h3>Experiments</h3>
+    {{if .Experiments}}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Rollout</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{range .Experiments}}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Description}}</td>
+              <td>{{.Rollout}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+      </table>
+      <p>To update experiments, modify the {{.Env}}-config.yaml file and deploy with
+        the <code>-config-only</code> flag.</p>
+    {{else}}
+      <p>No experiments.</p>
+    {{end}}
+    <iframe class="Experiments-updateResult" name="experimentUpdateResult" id="experimentUpdateResult"></iframe>
+  </div>
 
 </body>
 
