@@ -22,6 +22,8 @@ import (
 	"golang.org/x/pkgsite/internal/godoc/dochtml"
 	"golang.org/x/pkgsite/internal/source"
 	"golang.org/x/pkgsite/internal/stdlib"
+
+	gopdoc "golang.org/x/pkgsite/internal/gopdoc"
 )
 
 const (
@@ -125,6 +127,7 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 	if d.ImportPath != importPath {
 		panic(fmt.Errorf("internal error: *doc.Package has an unexpected import path (%q != %q)", d.ImportPath, importPath))
 	}
+
 	if noTypeAssociation {
 		for _, t := range d.Types {
 			d.Consts, t.Consts = append(d.Consts, t.Consts...), nil
@@ -138,7 +141,7 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 	if len(d.Imports) > maxImportsPerPackage {
 		return nil, fmt.Errorf("%d imports found package %q; exceeds limit %d for maxImportsPerPackage", len(d.Imports), importPath, maxImportsPerPackage)
 	}
-	return d, nil
+	return gopdoc.Transform(d), nil
 }
 
 // renderOptions returns a RenderOptions for p.
