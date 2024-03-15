@@ -152,7 +152,7 @@ func (p *Package) renderOptions(innerPath string, sourceInfo *source.Info, modIn
 		if p.Line == 0 { // invalid Position
 			return ""
 		}
-		// resolve gop_autogen.go path
+		// gop: resolve path in //line: of gop_autogen.go
 		p.Filename = filepath.Base(p.Filename)
 		return sourceInfo.LineURL(path.Join(innerPath, p.Filename), p.Line)
 	}
