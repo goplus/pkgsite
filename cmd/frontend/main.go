@@ -46,8 +46,10 @@ var (
 	thirdPartyPath = flag.String("third_party", "third_party", "path to folder containing third-party libraries")
 	devMode        = flag.Bool("dev", false, "enable developer mode (reload templates on each page load, serve non-minified JS/CSS, etc.)")
 	localMode      = flag.Bool("local", false, "enable local mode (hide irrelevant content and links to go.dev)")
-	disableCSP     = flag.Bool("nocsp", false, "disable Content Security Policy")
-	proxyURL       = flag.String("proxy_url", "https://proxy.golang.org", "Uses the module proxy referred to by this URL "+
+	// goplus-header & goplus-footer are registered by widget.hash.js dynamically created by https://goplus.org/widgets/loader.js introduced in Frontend.tmpl
+	// If CSP is enabled, the dynamically introduced widget.hash.js will not be loaded normally.
+	disableCSP = flag.Bool("nocsp", true, "disable Content Security Policy")
+	proxyURL   = flag.String("proxy_url", "https://proxy.golang.org", "Uses the module proxy referred to by this URL "+
 		"for direct proxy mode and frontend fetches")
 	directProxy = flag.Bool("direct_proxy", false, "if set to true, uses the module proxy referred to by this URL "+
 		"as a direct backend, bypassing the database")

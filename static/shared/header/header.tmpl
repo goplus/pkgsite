@@ -5,7 +5,11 @@
 -->
 
 {{define "header"}}
-  <header class="go-Header{{if .AllowWideContent}} go-Header--full{{end}} js-siteHeader">
+  <!-- Use header consistent with goplus.org-->
+  <!-- This custom element is registered by https://goplus.org/widgets/loader.js introduced in frontend.tmpl -->
+  <goplus-header></goplus-header>
+  <!-- top header -->
+  <header style="display: none;" class="go-Header{{if .AllowWideContent}} go-Header--full{{end}} js-siteHeader">
     <div class="go-Header-inner go-Header-inner--dark">
       <nav class="go-Header-nav">
         <a href="{{if .LocalMode}}/{{else}}https://go.dev/{{end}}" class="js-headerLogo" data-gtmc="nav link"
@@ -173,7 +177,8 @@
       </nav>
     </div>
   </header>
-  <aside class="go-NavigationDrawer js-header">
+  <!-- Drawer navigation under mobile form -->
+  <aside style="display: none;" class="go-NavigationDrawer js-header">
     <nav class="go-NavigationDrawer-nav">
       <div class="go-NavigationDrawer-header">
         <a href="https://go.dev/">
@@ -341,7 +346,8 @@
       </ul>
     </nav>
   </aside>
-  <div class="go-NavigationDrawer-scrim js-scrim" role="presentation"></div>
+  <!-- The mask when the mobile drawer appears -->
+  <div style="display: none;" class="go-NavigationDrawer-scrim js-scrim" role="presentation"></div>
 {{end}}
 
 {{define "symbol_search_bar"}}

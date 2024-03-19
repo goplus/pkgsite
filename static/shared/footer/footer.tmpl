@@ -5,7 +5,10 @@
 -->
 
 {{define "footer"}}
-  <footer class="go-Footer">
+  <!-- Use footer consistent with goplus.org-->
+  <!-- This custom element is registered by https://goplus.org/widgets/loader.js introduced in frontend.tmpl -->
+  <goplus-footer></goplus-footer>
+  <footer class="go-Footer" style="display: none;">
     {{block "pre-footer" .}}{{end}}
     <div class="go-Footer-links">
       <div class="go-Footer-linkColumn">
