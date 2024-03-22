@@ -32,9 +32,11 @@
   --white: #fff;
   --yellow: #fceea5;
   --yellow-light: #fff8cc;
+  --goplus-primary-color:#2c84ff;
 
   /* Color Intents */
-  --color-brand-primary: var(--turq-dark);
+  /* --color-brand-primary: var(--turq-dark); */
+  --color-brand-primary: var(--goplus-primary-color);
   --color-background: var(--white);
   --color-background-inverted: var(--slate);
   --color-background-accented: var(--gray-10);
@@ -46,7 +48,8 @@
   --color-border: var(--gray-7);
   --color-text: var(--gray-1);
   --color-text-subtle: var(--gray-4);
-  --color-text-link: var(--turq-dark);
+  /* --color-text-link: var(--turq-dark); */
+  --color-text-link: var(--goplus-primary-color);
   --color-text-inverted: var(--white);
   --color-code-comment: var(--green);
   --color-bright-text-link: var(--turq-bright);
@@ -54,7 +57,8 @@
   /* Interactive Colors */
   --color-input: var(--color-background);
   --color-input-text: var(--color-text);
-  --color-button: var(--turq-dark);
+  /* --color-button: var(--turq-dark); */
+  --color-button: var(--goplus-primary-color);
   --color-button-disabled: var(--gray-9);
   --color-button-text: var(--white);
   --color-button-text-disabled: var(--gray-3);
