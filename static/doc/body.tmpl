@@ -47,7 +47,8 @@
         {{- end -}}
         {{- with .Methods -}}
           <li><ul class="Documentation-indexTypeMethods">{{"\n" -}}{{range .}}<li>
-            <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{$tname}}.{{.Name}}">{{render_synopsis .Decl}}</a>
+            {{/* <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{$tname}}.{{.Name}}">{{render_synopsis .Decl}}</a> */}}
+            <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{render_synopsis .Decl | safe_identifier}}">{{render_synopsis .Decl}}</a>
             {{- if .IsDeprecated -}}
               <span class="Documentation-indexDeprecated Documentation-deprecatedTag">deprecated</span>
             {{- end -}}
@@ -141,6 +142,9 @@
 {{/* . is internal/godoc/dochtml.item */}}
 {{define "item"}}
   {{$id := safe_id .FullName}}
+  {{if eq .Kind "method"}}
+    {{$id = render_synopsis .Decl  | safe_identifier  }}
+  {{end}}
   {{if .IsDeprecated}}
     <details class="Documentation-deprecatedDetails js-deprecatedDetails">
       <summary>

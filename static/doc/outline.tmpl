@@ -73,7 +73,7 @@
                 {{end}}
                 {{range .Methods}}
                   <li>
-                    <a href="#{{$tname}}.{{.Name}}" title="{{render_short_synopsis .Decl}}"
+                    <a href="#{{render_synopsis .Decl  | safe_identifier}}" title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>
