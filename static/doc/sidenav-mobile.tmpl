@@ -37,7 +37,7 @@
         <option value="{{.Name}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
       {{range .Methods}}
-        <option value="{{$tname}}.{{.Name}}">{{render_short_synopsis .Decl}}</option>
+        <option value="{{render_synopsis .Decl  | safe_identifier}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
     {{end}} {{/* range .Types */}}
   </optgroup>
