@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/google/safehtml"
+	"github.com/google/safehtml/legacyconversions"
 	"github.com/google/safehtml/template"
 	"golang.org/x/pkgsite/internal/godoc/dochtml/internal/render"
 )
@@ -68,4 +69,5 @@ var tmpl = map[string]any{
 	"since_version":            func(string) safehtml.HTML { return safehtml.HTML{} },
 	"play_url":                 func(*doc.Example) string { return "" },
 	"safe_id":                  render.SafeGoID,
+	"safe_identifier":          legacyconversions.RiskilyAssumeIdentifier,
 }
