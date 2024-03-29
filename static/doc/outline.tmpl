@@ -73,7 +73,14 @@
                 {{end}}
                 {{range .Methods}}
                   <li>
-                    <a href="#{{render_synopsis .Decl  | safe_identifier}}" title="{{render_short_synopsis .Decl}}"
+                    <a 
+                    {{$id := printf "%s.%s" $tname .Name}}
+                    {{if eq .OverloadOrder 0}} 
+                      href="#{{$id}}" 
+                    {{else}}
+                      href="#{{render_overload .}}"
+                    {{end}}
+                    title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>

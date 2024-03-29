@@ -134,6 +134,7 @@ type item struct {
 	Decl                         ast.Decl   // GenDecl for consts, vars and types; FuncDecl for functions
 	Name                         string     // for types and functions; empty for consts and vars
 	FullName                     string     // for methods, the type name + "." + Name; else same as Name
+	OverloadOrder                int        // for methods, Overloaded function order,start with 1
 	HeaderStart                  string     // text of header, before source link
 	Examples                     []*example // for types and functions; empty for vars and consts
 	IsDeprecated                 bool
@@ -183,15 +184,16 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 			headerStart += " (" + f.Recv + ")"
 		}
 		i := &item{
-			Doc:          f.Doc,
-			Decl:         f.Decl,
-			Name:         f.Name,
-			FullName:     fullName,
-			HeaderStart:  headerStart,
-			IsDeprecated: funcIsDeprecated(f),
-			Examples:     exmap[fullName],
-			Kind:         kind,
-			HeaderClass:  hclass,
+			Doc:           f.Doc,
+			Decl:          f.Decl,
+			Name:          f.Name,
+			FullName:      fullName,
+			OverloadOrder: f.OverloadOrder,
+			HeaderStart:   headerStart,
+			IsDeprecated:  funcIsDeprecated(f),
+			Examples:      exmap[fullName],
+			Kind:          kind,
+			HeaderClass:   hclass,
 		}
 		r = append(r, i)
 	}

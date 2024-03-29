@@ -37,7 +37,14 @@
         <option value="{{.Name}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
       {{range .Methods}}
-        <option value="{{render_synopsis .Decl  | safe_identifier}}">{{render_short_synopsis .Decl}}</option>
+        <option 
+          {{$id := printf "%s.%s" $tname .Name}}
+          {{if eq .OverloadOrder 0}} 
+            value="{{$id}}" 
+          {{else}}
+            value="{{render_overload .}}"
+          {{end}}
+        >{{render_short_synopsis .Decl}}</option>
       {{end}}
     {{end}} {{/* range .Types */}}
   </optgroup>

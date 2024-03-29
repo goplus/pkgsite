@@ -185,6 +185,7 @@ func transformFunc(ctx *transformCtx, t *doc.Type, in *doc.Func, method bool) {
 		in.Name = in.Name[:len(in.Name)-3]
 		in.Decl.Name.Name = in.Name
 		ctx.orders[in] = order
+		in.OverloadOrder = order + 1
 	}
 }
 
