@@ -9,6 +9,9 @@ import (
 	"go/doc"
 	"path"
 	"reflect"
+	"regexp"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/google/safehtml"
@@ -22,6 +25,9 @@ var (
 	// TODO(golang.org/issue/5060): finalize URL scheme and design for notes,
 	// then it becomes more viable to factor out inline CSS style.
 	bodyTemplate, outlineTemplate, sidenavTemplate *template.Template
+)
+var (
+	overloadFuncIndexPattern = regexp.MustCompile(`^overload_func_index:(\d+)\n`)
 )
 
 func Templates() []*template.Template {
@@ -47,6 +53,20 @@ func LoadTemplates(fsys template.TrustedFS) {
 	})
 }
 
+func overloadFuncIndex(item *item) int {
+	if item.Kind != "method" && item.Kind != "function" {
+		return -1
+	}
+	match := overloadFuncIndexPattern.FindStringSubmatch(item.Doc)
+	if len(match) == 2 {
+		valueStr := match[1]
+		if intValue, err := strconv.Atoi(valueStr); err == nil {
+			return intValue
+		}
+	}
+	return -1
+}
+
 var tmpl = map[string]any{
 	"ternary": func(q, a, b any) any {
 		v := reflect.ValueOf(q)
@@ -69,5 +89,25 @@ var tmpl = map[string]any{
 	"since_version":            func(string) safehtml.HTML { return safehtml.HTML{} },
 	"play_url":                 func(*doc.Example) string { return "" },
 	"safe_id":                  render.SafeGoID,
-	"render_overload":          func(item *item) string { return fmt.Sprintf("%s__%d", item.FullName, item.OverloadOrder-1) },
+	"render_function_id": func(item *item) string {
+		fullName := item.Name
+		overloadIndex := overloadFuncIndex(item)
+		if item.FullName != "" {
+			fullName = item.FullName
+		}
+		if overloadIndex != -1 {
+			return fmt.Sprintf("%s__%d", fullName, overloadIndex)
+		} else {
+			return fullName
+		}
+	},
+	"render_actual_doc": func(item *item) string {
+		if item.Kind != "method" && item.Kind != "function" {
+			return item.Doc
+		}
+		doc := item.Doc
+		doc = overloadFuncIndexPattern.ReplaceAllString(doc, "")
+		doc = strings.TrimSpace(doc)
+		return doc
+	},
 }

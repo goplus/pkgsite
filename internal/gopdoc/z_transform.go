@@ -180,12 +180,14 @@ func transformFunc(ctx *transformCtx, t *doc.Type, in *doc.Func, method bool) {
 			buildFunc(ctx, overload, in)
 		}
 	}
+
 	if isOverload(in.Name) {
+
 		order := toIndex(in.Name[len(in.Name)-1])
 		in.Name = in.Name[:len(in.Name)-3]
 		in.Decl.Name.Name = in.Name
 		ctx.orders[in] = order
-		in.OverloadOrder = order + 1
+		in.Doc = "overload_func_index:" + strconv.Itoa(order) + "\n" + in.Doc
 	}
 }
 

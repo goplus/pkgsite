@@ -34,16 +34,10 @@
       {{$tname := .Name}}
       <option value="{{$tname}}">type {{$tname}}</option>
       {{range .Funcs}}
-        <option value="{{.Name}}">{{render_short_synopsis .Decl}}</option>
+        <option value="{{render_function_id .}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
       {{range .Methods}}
-        <option 
-          {{$id := printf "%s.%s" $tname .Name}}
-          {{if eq .OverloadOrder 0}} 
-            value="{{$id}}" 
-          {{else}}
-            value="{{render_overload .}}"
-          {{end}}
+        <option value="{{render_function_id .}}"
         >{{render_short_synopsis .Decl}}</option>
       {{end}}
     {{end}} {{/* range .Types */}}

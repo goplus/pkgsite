@@ -12,7 +12,7 @@
       <pre>{{- $out.Decl -}}</pre>
     </div>
   {{end}}
-  {{- $out.Doc -}}
+  {{- render_actual_doc . -}}
   {{"\n"}}
 {{- end -}}
 

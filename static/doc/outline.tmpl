@@ -42,7 +42,7 @@
         <ul>
           {{range .Funcs}}
             <li>
-              <a href="#{{.Name}}" title="{{render_short_synopsis .Decl}}" data-gtmc="doc outline link">
+              <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}" data-gtmc="doc outline link">
                 {{render_short_synopsis .Decl}}
               </a>
             </li>
@@ -65,7 +65,7 @@
               <ul>
                 {{range .Funcs}}
                   <li>
-                    <a href="#{{.Name}}" title="{{render_short_synopsis .Decl}}"
+                    <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>
@@ -73,14 +73,7 @@
                 {{end}}
                 {{range .Methods}}
                   <li>
-                    <a 
-                    {{$id := printf "%s.%s" $tname .Name}}
-                    {{if eq .OverloadOrder 0}} 
-                      href="#{{$id}}" 
-                    {{else}}
-                      href="#{{render_overload .}}"
-                    {{end}}
-                    title="{{render_short_synopsis .Decl}}"
+                    <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>
