@@ -96,6 +96,10 @@ var tmpl = map[string]any{
 			fullName = item.FullName
 		}
 		if overloadIndex != -1 {
+			// The first overloaded function does not require an index to render id
+			if overloadIndex == 0 {
+				return fullName
+			}
 			return fmt.Sprintf("%s__%d", fullName, overloadIndex)
 		} else {
 			return fullName
