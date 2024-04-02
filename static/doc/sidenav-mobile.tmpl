@@ -37,8 +37,7 @@
         <option value="{{render_function_id .}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
       {{range .Methods}}
-        <option value="{{render_function_id .}}"
-        >{{render_short_synopsis .Decl}}</option>
+        <option value="{{render_function_id .}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
     {{end}} {{/* range .Types */}}
   </optgroup>

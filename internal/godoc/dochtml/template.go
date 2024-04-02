@@ -5,13 +5,11 @@
 package dochtml
 
 import (
-	"fmt"
 	"go/doc"
 	"path"
 	"reflect"
 	"regexp"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/google/safehtml"
@@ -89,29 +87,14 @@ var tmpl = map[string]any{
 	"since_version":            func(string) safehtml.HTML { return safehtml.HTML{} },
 	"play_url":                 func(*doc.Example) string { return "" },
 	"safe_id":                  render.SafeGoID,
-	"render_function_id": func(item *item) string {
-		fullName := item.Name
-		overloadIndex := overloadFuncIndex(item)
-		if item.FullName != "" {
-			fullName = item.FullName
-		}
-		if overloadIndex != -1 {
-			// The first overloaded function does not require an index to render id
-			if overloadIndex == 0 {
-				return fullName
-			}
-			return fmt.Sprintf("%s__%d", fullName, overloadIndex)
-		} else {
-			return fullName
-		}
-	},
-	"render_actual_doc": func(item *item) string {
-		if item.Kind != "method" && item.Kind != "function" {
-			return item.Doc
-		}
-		doc := item.Doc
-		doc = overloadFuncIndexPattern.ReplaceAllString(doc, "")
-		doc = strings.TrimSpace(doc)
-		return doc
+	"render_function_id":       func(item *item) string { return "" },
+	"render_gop_decl": func(item *item) (out struct {
+		Doc  safehtml.HTML
+		Decl safehtml.HTML
+	}) {
+		return struct {
+			Doc  safehtml.HTML
+			Decl safehtml.HTML
+		}{}
 	},
 }

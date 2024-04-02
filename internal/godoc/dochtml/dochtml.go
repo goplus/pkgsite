@@ -286,6 +286,33 @@ func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Re
 		"file_link":                fileLink,
 		"source_link":              sourceLink,
 		"since_version":            sinceVersion,
+		"render_function_id": func(item *item) string {
+			fullName := item.Name
+			overloadIndex := overloadFuncIndex(item)
+			if item.FullName != "" {
+				fullName = item.FullName
+			}
+			if overloadIndex != -1 {
+				// The first overloaded function does not require an index to render id
+				if overloadIndex == 0 {
+					return fullName
+				}
+				return fmt.Sprintf("%s__%d", fullName, overloadIndex)
+			} else {
+				return fullName
+			}
+		},
+		"render_gop_decl": func(item *item) (out struct {
+			Doc  safehtml.HTML
+			Decl safehtml.HTML
+		}) {
+			doc := item.Doc
+			if item.Kind == "method" || item.Kind == "function" {
+				doc = overloadFuncIndexPattern.ReplaceAllString(doc, "")
+				doc = strings.TrimSpace(doc)
+			}
+			return r.DeclHTML(doc, item.Decl)
+		},
 	}
 	examples := collectExamples(p)
 	data := TemplateData{
