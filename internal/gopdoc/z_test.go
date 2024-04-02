@@ -116,7 +116,8 @@ func AddInt(a, b int) int {}
 // AddString doc
 func AddString(a, b string) string {}
 `, `== Func Add ==
-Doc: AddInt doc
+Doc: overload_func_index:0
+AddInt doc
 
 func Add(a, b int) int
 == Func Add ==
@@ -125,7 +126,8 @@ Add doc
 
 func Add(a, b float64) float64
 == Func Add ==
-Doc: AddString doc
+Doc: overload_func_index:2
+AddString doc
 
 func Add(a, b string) string
 == Func AddInt ==
