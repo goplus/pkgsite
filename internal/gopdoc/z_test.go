@@ -88,12 +88,14 @@ Doc: AddInt doc
 func (p T) AddInt(b int) *T
 - Method Gop_Add -
 Recv: T
-Doc: AddInt doc
+Doc: overload_func_index:0
+AddInt doc
 
 func (p T) Gop_Add(b int) *T
 - Method Gop_Add -
 Recv: *T
-Doc: AddString doc
+Doc: overload_func_index:1
+AddString doc
 
 func (this *T) Gop_Add(b string) *T
 `)

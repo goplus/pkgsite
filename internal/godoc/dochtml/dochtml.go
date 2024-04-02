@@ -309,7 +309,6 @@ func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Re
 			doc := item.Doc
 			if item.Kind == "method" || item.Kind == "function" {
 				doc = overloadFuncIndexPattern.ReplaceAllString(doc, "")
-				doc = strings.TrimSpace(doc)
 			}
 			return r.DeclHTML(doc, item.Decl)
 		},
