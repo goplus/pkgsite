@@ -26,6 +26,8 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/pkgsite/internal/godoc/dochtml/internal/render"
 	"golang.org/x/pkgsite/internal/testing/testhelper"
+
+	gopdoc "golang.org/x/pkgsite/internal/gopdoc"
 )
 
 var templateFS = template.TrustedFSFromTrustedSource(template.TrustedSourceFromConstant("../../../static"))
@@ -88,6 +90,18 @@ func TestRenderDeprecated(t *testing.T) {
 		t.Fatal(err)
 	}
 	compareWithGolden(t, parts, "deprecated-on", *update)
+}
+
+func TestRenderOverload(t *testing.T) {
+	t.Helper()
+	LoadTemplates(templateFS)
+	fset, d := mustLoadPackage("overload")
+	gopdoc.Transform(d)
+	parts, err := Render(context.Background(), fset, d, testRenderOptions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compareWithGolden(t, parts, "overload", *update)
 }
 
 func compareWithGolden(t *testing.T, parts *Parts, name string, update bool) {
