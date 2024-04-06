@@ -16,9 +16,11 @@
 
 package gopdoc
 
+/*
 import (
 	"go/doc"
 )
 
 func transformBuiltin(in *doc.Package) {
 }
+*/

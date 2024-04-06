@@ -254,8 +254,8 @@ func Transform(in *doc.Package) *doc.Package {
 		transformFuncs(ctx, nil, in.Funcs, false)
 		transformTypes(ctx, in.Types)
 		ctx.finish(in)
-	} else if in.ImportPath == "builtin" {
+	} /* else if in.ImportPath == "builtin" {
 		transformBuiltin(in)
-	}
+	} */
 	return in
 }
