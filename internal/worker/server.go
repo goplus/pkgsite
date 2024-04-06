@@ -178,6 +178,13 @@ func (s *Server) Install(handle func(string, http.Handler)) {
 	// is queued to refresh the std@master version.
 	handle("/fetch-std-master", rmw(s.errorHandler(s.handleFetchStdSupportedBranches)))
 
+	// scheduled: fetch a version for match versions from the Go standard
+	// library into the tasks queue to be processed and inserted into the
+	// database. and skip all -beta and -rc version.
+	// v1.22 match to [v1.22.0 v1.22.1 v1.22.2].
+	// v1.22.1 match [v1.22.1]
+	handle("/fetch-std/", http.StripPrefix("/fetch-std", rmw(s.errorHandler(s.handleFetchStd))))
+
 	// scheduled: enqueue queries the module_version_states table for the next
 	// batch of module versions to process, and enqueues them for processing.
 	// Normally this will not cause duplicate processing, because Cloud Tasks
@@ -610,6 +617,45 @@ func (s *Server) doPopulateStdLib(ctx context.Context, suffix string) (string, e
 		}
 	}
 	return fmt.Sprintf("Scheduling modules to be fetched: %s.\n", strings.Join(versions, ", ")), nil
+}
+
+func (s *Server) doFetchStdLib(ctx context.Context, ver string, suffix string) (string, error) {
+	versions, err := stdlib.Versions()
+	if err != nil {
+		return "", err
+	}
+	var found []string
+	for _, v := range versions {
+		// skip -beta and -rc
+		if strings.Contains(v, "-") {
+			continue
+		}
+		if !strings.HasPrefix(v, ver) {
+			continue
+		}
+		found = append(found, v)
+		opts := &queue.Options{
+			Suffix: suffix,
+		}
+		if _, err := s.queue.ScheduleFetch(ctx, stdlib.ModulePath, v, opts); err != nil {
+			return "", fmt.Errorf("error scheduling fetch for %s: %w", v, err)
+		}
+	}
+	if len(found) == 0 {
+		return "", fmt.Errorf("error scheduling fetch for %s: not found in %v", ver, versions)
+	}
+	return fmt.Sprintf("Scheduling modules to be fetched: %s.\n", found), nil
+}
+
+func (s *Server) handleFetchStd(w http.ResponseWriter, r *http.Request) error {
+	msg, err := s.doFetchStdLib(r.Context(), strings.TrimPrefix(r.URL.Path, "/"), r.FormValue("suffix"))
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	if err != nil {
+		return fmt.Errorf("handleFetchStd: %v", err)
+	}
+	log.Infof(r.Context(), "handleFetchStd: %s", msg)
+	_, _ = io.WriteString(w, msg)
+	return nil
 }
 
 func (s *Server) handleReprocess(w http.ResponseWriter, r *http.Request) error {
