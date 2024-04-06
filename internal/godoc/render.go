@@ -23,7 +23,7 @@ import (
 	"golang.org/x/pkgsite/internal/source"
 	"golang.org/x/pkgsite/internal/stdlib"
 
-	gopdoc "golang.org/x/pkgsite/internal/gopdoc"
+	"golang.org/x/pkgsite/internal/gopdoc"
 )
 
 const (
