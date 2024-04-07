@@ -42,7 +42,7 @@
         <ul>
           {{range .Funcs}}
             <li>
-              <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}" data-gtmc="doc outline link">
+              <a href="#{{.FuncId}}" title="{{render_short_synopsis .Decl}}" data-gtmc="doc outline link">
                 {{render_short_synopsis .Decl}}
               </a>
             </li>
@@ -65,7 +65,7 @@
               <ul>
                 {{range .Funcs}}
                   <li>
-                    <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}"
+                    <a href="#{{.FuncId}}" title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>
@@ -73,7 +73,7 @@
                 {{end}}
                 {{range .Methods}}
                   <li>
-                    <a href="#{{render_function_id .}}" title="{{render_short_synopsis .Decl}}"
+                    <a href="#{{.FuncId}}" title="{{render_short_synopsis .Decl}}"
                         data-gtmc="doc outline link">
                       {{render_short_synopsis .Decl}}
                     </a>

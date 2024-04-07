@@ -19,7 +19,9 @@ import (
 	"go/doc"
 	"go/printer"
 	"go/token"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/google/safehtml"
@@ -37,6 +39,9 @@ var (
 	// ErrTooLarge represents an error where the rendered documentation HTML
 	// size exceeded the specified limit. See the RenderOptions.Limit field.
 	ErrTooLarge = errors.New("rendered documentation HTML size exceeded the specified limit")
+)
+var (
+	overloadFuncIndexPattern = regexp.MustCompile(`^overload_func_index:(\d+)\n`)
 )
 
 // ModuleInfo contains all the information a package needs about the module it
@@ -141,6 +146,17 @@ type item struct {
 	// HTML-specific values, for types and functions
 	Kind        string // for data-kind attribute
 	HeaderClass string // class for header
+	FuncId      string // for functions and methods
+}
+
+func overloadFuncIndex(fn *doc.Func) (int, int) {
+	if match := overloadFuncIndexPattern.FindStringSubmatch(fn.Doc); len(match) == 2 {
+		valueStr := match[1]
+		if intValue, err := strconv.Atoi(valueStr); err == nil {
+			return intValue, len(match[0])
+		}
+	}
+	return -1, -1
 }
 
 func packageToItems(p *doc.Package, exmap map[string][]*example) (consts, vars, funcs, types []*item) {
@@ -178,15 +194,24 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 		}
 		kind := "function"
 		headerStart := "func"
+		funcId := fullName
 		if f.Recv != "" {
 			kind = "method"
 			headerStart += " (" + f.Recv + ")"
 		}
+		if index, match := overloadFuncIndex(f); index >= 0 {
+			f.Doc = f.Doc[match:]
+			if index > 0 {
+				funcId = fmt.Sprintf("%s__%d", fullName, index)
+			}
+		}
+
 		i := &item{
 			Doc:          f.Doc,
 			Decl:         f.Decl,
 			Name:         f.Name,
 			FullName:     fullName,
+			FuncId:       funcId,
 			HeaderStart:  headerStart,
 			IsDeprecated: funcIsDeprecated(f),
 			Examples:     exmap[fullName],
@@ -286,32 +311,6 @@ func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Re
 		"file_link":                fileLink,
 		"source_link":              sourceLink,
 		"since_version":            sinceVersion,
-		"render_function_id": func(item *item) string {
-			fullName := item.Name
-			overloadIndex := overloadFuncIndex(item)
-			if item.FullName != "" {
-				fullName = item.FullName
-			}
-			if overloadIndex != -1 {
-				// The first overloaded function does not require an index to render id
-				if overloadIndex == 0 {
-					return fullName
-				}
-				return fmt.Sprintf("%s__%d", fullName, overloadIndex)
-			} else {
-				return fullName
-			}
-		},
-		"render_gop_decl": func(item *item) (out struct {
-			Doc  safehtml.HTML
-			Decl safehtml.HTML
-		}) {
-			doc := item.Doc
-			if item.Kind == "method" || item.Kind == "function" {
-				doc = overloadFuncIndexPattern.ReplaceAllString(doc, "")
-			}
-			return r.DeclHTML(doc, item.Decl)
-		},
 	}
 	examples := collectExamples(p)
 	data := TemplateData{

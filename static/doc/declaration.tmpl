@@ -6,7 +6,7 @@
 
 {{/* . is internal/godoc/dochtml.item */}}
 {{- define "declaration" -}}
-  {{- $out := render_gop_decl . -}}
+  {{- $out := render_decl .Doc .Decl -}}
   {{if $out.Decl}}
     <div class="Documentation-declaration">
       <pre>{{- $out.Decl -}}</pre>
@@ -17,7 +17,7 @@
 {{- end -}}
 
 {{- define "declaration-view-source" -}}
-  {{- $out := render_gop_decl . -}}
+  {{- $out := render_decl .Doc .Decl -}}
   {{if $out.Decl}}
     <div class="Documentation-declaration">
       <span class="Documentation-declarationLink">{{source_link "View Source" .Decl}}</span>

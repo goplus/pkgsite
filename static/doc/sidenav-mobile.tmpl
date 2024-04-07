@@ -34,10 +34,10 @@
       {{$tname := .Name}}
       <option value="{{$tname}}">type {{$tname}}</option>
       {{range .Funcs}}
-        <option value="{{render_function_id .}}">{{render_short_synopsis .Decl}}</option>
+        <option value="{{.FuncId}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
       {{range .Methods}}
-        <option value="{{render_function_id .}}">{{render_short_synopsis .Decl}}</option>
+        <option value="{{.FuncId}}">{{render_short_synopsis .Decl}}</option>
       {{end}}
     {{end}} {{/* range .Types */}}
   </optgroup>

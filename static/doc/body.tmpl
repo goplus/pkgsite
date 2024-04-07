@@ -22,7 +22,7 @@
 
       {{- range .Funcs -}}
       <li class="Documentation-indexFunction">
-        <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{render_function_id .}}">{{render_synopsis .Decl}}</a>
+        <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{.FuncId}}">{{render_synopsis .Decl}}</a>
         {{- if .IsDeprecated -}}
           <span class="Documentation-indexDeprecated Documentation-deprecatedTag">deprecated</span>
         {{- end -}}
@@ -47,7 +47,7 @@
         {{- end -}}
         {{- with .Methods -}}
           <li><ul class="Documentation-indexTypeMethods">{{"\n" -}}{{range .}}<li>
-            <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{render_function_id .}}">{{render_synopsis .Decl}}</a>
+            <a {{if .IsDeprecated}}class="js-deprecatedTagLink" {{end}}href="#{{.FuncId}}">{{render_synopsis .Decl}}</a>
             {{- if .IsDeprecated -}}
               <span class="Documentation-indexDeprecated Documentation-deprecatedTag">deprecated</span>
             {{- end -}}
@@ -142,7 +142,7 @@
 {{define "item"}}
   {{$id := safe_id .FullName}}
   {{if and (or (eq .Kind "method") (eq .Kind "function"))}}
-    {{$id = safe_id (render_function_id .)}}
+    {{$id = safe_id (.FuncId)}}
   {{end}}
   {{if .IsDeprecated}}
     <details class="Documentation-deprecatedDetails js-deprecatedDetails">

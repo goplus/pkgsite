@@ -8,8 +8,6 @@ import (
 	"go/doc"
 	"path"
 	"reflect"
-	"regexp"
-	"strconv"
 	"sync"
 
 	"github.com/google/safehtml"
@@ -23,9 +21,6 @@ var (
 	// TODO(golang.org/issue/5060): finalize URL scheme and design for notes,
 	// then it becomes more viable to factor out inline CSS style.
 	bodyTemplate, outlineTemplate, sidenavTemplate *template.Template
-)
-var (
-	overloadFuncIndexPattern = regexp.MustCompile(`^overload_func_index:(\d+)\n`)
 )
 
 func Templates() []*template.Template {
@@ -51,20 +46,6 @@ func LoadTemplates(fsys template.TrustedFS) {
 	})
 }
 
-func overloadFuncIndex(item *item) int {
-	if item.Kind != "method" && item.Kind != "function" {
-		return -1
-	}
-	match := overloadFuncIndexPattern.FindStringSubmatch(item.Doc)
-	if len(match) == 2 {
-		valueStr := match[1]
-		if intValue, err := strconv.Atoi(valueStr); err == nil {
-			return intValue
-		}
-	}
-	return -1
-}
-
 var tmpl = map[string]any{
 	"ternary": func(q, a, b any) any {
 		v := reflect.ValueOf(q)
@@ -87,14 +68,4 @@ var tmpl = map[string]any{
 	"since_version":            func(string) safehtml.HTML { return safehtml.HTML{} },
 	"play_url":                 func(*doc.Example) string { return "" },
 	"safe_id":                  render.SafeGoID,
-	"render_function_id":       func(item *item) string { return "" },
-	"render_gop_decl": func(item *item) (out struct {
-		Doc  safehtml.HTML
-		Decl safehtml.HTML
-	}) {
-		return struct {
-			Doc  safehtml.HTML
-			Decl safehtml.HTML
-		}{}
-	},
 }
