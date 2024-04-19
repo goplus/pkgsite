@@ -248,7 +248,7 @@ func testPkg(t *testing.T, in, expected string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pkg = Transform(pkg)
+	pkg, _ = Transform(pkg)
 	if ret := printPkg(fset, pkg); ret != expected {
 		t.Fatalf("got:\n%s\nexpected:\n%s\n", ret, expected)
 	}

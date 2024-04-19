@@ -47,6 +47,10 @@ type transformCtx struct {
 	orders        map[*doc.Func]int
 }
 
+type GopInfo struct {
+	OverloadFuncsOrder map[*doc.Func]int
+}
+
 func (p *transformCtx) finish(in *doc.Package) {
 	for _, ex := range p.typs {
 		if t := ex.t; t != nil {
@@ -247,15 +251,18 @@ func transformConsts(ctx *transformCtx, in []*doc.Value) {
 }
 
 // Transform converts a Go doc package to a Go+ doc package.
-func Transform(in *doc.Package) *doc.Package {
+func Transform(in *doc.Package) (*doc.Package, *GopInfo) {
 	if isGopPackage(in) {
 		ctx := newCtx(in)
 		transformConsts(ctx, in.Consts)
 		transformFuncs(ctx, nil, in.Funcs, false)
 		transformTypes(ctx, in.Types)
 		ctx.finish(in)
+		return in, &GopInfo{
+			OverloadFuncsOrder: ctx.orders,
+		}
 	} /* else if in.ImportPath == "builtin" {
 		transformBuiltin(in)
 	} */
-	return in
+	return in, nil
 }

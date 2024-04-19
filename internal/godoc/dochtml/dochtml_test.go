@@ -25,6 +25,7 @@ import (
 	"github.com/google/safehtml/template"
 	"golang.org/x/net/html"
 	"golang.org/x/pkgsite/internal/godoc/dochtml/internal/render"
+	"golang.org/x/pkgsite/internal/gopdoc"
 	"golang.org/x/pkgsite/internal/testing/testhelper"
 )
 
@@ -49,7 +50,7 @@ func TestRender(t *testing.T) {
 	for _, pkg := range []string{"everydecl", "comments"} {
 		t.Run(pkg, func(t *testing.T) {
 			fset, d := mustLoadPackage(pkg)
-			parts, err := Render(ctx, fset, d, testRenderOptions)
+			parts, err := Render(ctx, fset, d, testRenderOptions, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -83,11 +84,23 @@ func TestRender(t *testing.T) {
 func TestRenderDeprecated(t *testing.T) {
 	t.Helper()
 	fset, d := mustLoadPackage("deprecated")
-	parts, err := Render(context.Background(), fset, d, testRenderOptions)
+	parts, err := Render(context.Background(), fset, d, testRenderOptions, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	compareWithGolden(t, parts, "deprecated-on", *update)
+}
+
+func TestRenderOverload(t *testing.T) {
+	t.Helper()
+	LoadTemplates(templateFS)
+	fset, d := mustLoadPackage("overload")
+	doc, gopinfo := gopdoc.Transform(d)
+	parts, err := Render(context.Background(), fset, doc, testRenderOptions, gopinfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compareWithGolden(t, parts, "overload", *update)
 }
 
 func compareWithGolden(t *testing.T, parts *Parts, name string, update bool) {
@@ -110,7 +123,7 @@ func TestExampleRender(t *testing.T) {
 	ctx := context.Background()
 	fset, d := mustLoadPackage("example_test")
 
-	parts, err := Render(ctx, fset, d, testRenderOptions)
+	parts, err := Render(ctx, fset, d, testRenderOptions, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -50,7 +50,7 @@ func (p *Package) DocInfo(ctx context.Context, innerPath string, sourceInfo *sou
 	defer derrors.Wrap(&err, "godoc.Package.DocInfo(%q, %q, %q)", modInfo.ModulePath, modInfo.ResolvedVersion, innerPath)
 
 	p.renderCalled = true
-	d, err := p.DocPackage(innerPath, modInfo)
+	d, _, err := p.DocPackage(innerPath, modInfo)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -90,7 +90,7 @@ func cleanImports(imports []string, importPath string) []string {
 }
 
 // DocPackage computes and returns a doc.Package.
-func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Package, err error) {
+func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Package, info *gopdoc.GopInfo, err error) {
 	defer derrors.Wrap(&err, "docPackage(%q, %q, %q)", innerPath, modInfo.ModulePath, modInfo.ResolvedVersion)
 	importPath := path.Join(modInfo.ModulePath, innerPath)
 	if modInfo.ModulePath == stdlib.ModulePath {
@@ -122,7 +122,7 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 
 	d, err := doc.NewFromFiles(p.Fset, allGoFiles, importPath, m)
 	if err != nil {
-		return nil, fmt.Errorf("doc.NewFromFiles: %v", err)
+		return nil, nil, fmt.Errorf("doc.NewFromFiles: %v", err)
 	}
 	if d.ImportPath != importPath {
 		panic(fmt.Errorf("internal error: *doc.Package has an unexpected import path (%q != %q)", d.ImportPath, importPath))
@@ -139,9 +139,10 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 
 	// Process package imports.
 	if len(d.Imports) > maxImportsPerPackage {
-		return nil, fmt.Errorf("%d imports found package %q; exceeds limit %d for maxImportsPerPackage", len(d.Imports), importPath, maxImportsPerPackage)
+		return nil, nil, fmt.Errorf("%d imports found package %q; exceeds limit %d for maxImportsPerPackage", len(d.Imports), importPath, maxImportsPerPackage)
 	}
-	return gopdoc.Transform(d), nil
+	transformedDoc, gopinfo := gopdoc.Transform(d)
+	return transformedDoc, gopinfo, nil
 }
 
 // renderOptions returns a RenderOptions for p.
@@ -225,13 +226,13 @@ func (p *Package) Render(ctx context.Context, innerPath string,
 	bc internal.BuildContext) (_ *dochtml.Parts, err error) {
 	p.renderCalled = true
 
-	d, err := p.DocPackage(innerPath, modInfo)
+	d, info, err := p.DocPackage(innerPath, modInfo)
 	if err != nil {
 		return nil, err
 	}
 
 	opts := p.renderOptions(innerPath, sourceInfo, modInfo, nameToVersion, bc)
-	parts, err := dochtml.Render(ctx, p.Fset, d, opts)
+	parts, err := dochtml.Render(ctx, p.Fset, d, opts, info)
 	if errors.Is(err, ErrTooLarge) {
 		return &dochtml.Parts{Body: template.MustParseAndExecuteToHTML(DocTooLargeReplacement)}, nil
 	}
