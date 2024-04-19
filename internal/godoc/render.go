@@ -141,8 +141,8 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 	if len(d.Imports) > maxImportsPerPackage {
 		return nil, nil, fmt.Errorf("%d imports found package %q; exceeds limit %d for maxImportsPerPackage", len(d.Imports), importPath, maxImportsPerPackage)
 	}
-	transformedDoc, gopinfo := gopdoc.Transform(d)
-	return transformedDoc, gopinfo, nil
+	d, info = gopdoc.Transform(d)
+	return d, info, nil
 }
 
 // renderOptions returns a RenderOptions for p.
@@ -232,7 +232,10 @@ func (p *Package) Render(ctx context.Context, innerPath string,
 	}
 
 	opts := p.renderOptions(innerPath, sourceInfo, modInfo, nameToVersion, bc)
-	parts, err := dochtml.Render(ctx, p.Fset, d, opts, info)
+	if info != nil {
+		opts.FuncIdFunc = info.FuncId
+	}
+	parts, err := dochtml.Render(ctx, p.Fset, d, opts)
 	if errors.Is(err, ErrTooLarge) {
 		return &dochtml.Parts{Body: template.MustParseAndExecuteToHTML(DocTooLargeReplacement)}, nil
 	}

@@ -17,6 +17,7 @@
 package gopdoc
 
 import (
+	"fmt"
 	"go/ast"
 	"go/doc"
 	"go/token"
@@ -48,7 +49,14 @@ type transformCtx struct {
 }
 
 type GopInfo struct {
-	OverloadFuncsOrder map[*doc.Func]int
+	overloadFuncsOrder map[*doc.Func]int
+}
+
+func (g *GopInfo) FuncId(fn *doc.Func, fullName string) string {
+	if overloadOrder, ok := g.overloadFuncsOrder[fn]; ok && overloadOrder > 0 {
+		return fmt.Sprintf("%s__%d", fullName, overloadOrder)
+	}
+	return fullName
 }
 
 func (p *transformCtx) finish(in *doc.Package) {
@@ -259,7 +267,7 @@ func Transform(in *doc.Package) (*doc.Package, *GopInfo) {
 		transformTypes(ctx, in.Types)
 		ctx.finish(in)
 		return in, &GopInfo{
-			OverloadFuncsOrder: ctx.orders,
+			overloadFuncsOrder: ctx.orders,
 		}
 	} /* else if in.ImportPath == "builtin" {
 		transformBuiltin(in)

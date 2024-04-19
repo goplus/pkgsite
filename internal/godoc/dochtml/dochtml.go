@@ -29,7 +29,6 @@ import (
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/godoc/dochtml/internal/render"
-	"golang.org/x/pkgsite/internal/gopdoc"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -60,6 +59,7 @@ type RenderOptions struct {
 	FileLinkFunc     func(file string) (url string)
 	SourceLinkFunc   func(ast.Node) string
 	SinceVersionFunc func(name string) string
+	FuncIdFunc       func(fn *doc.Func, fullName string) (id string)
 	// ModInfo optionally specifies information about the module the package
 	// belongs to in order to render module-related documentation.
 	ModInfo      *ModuleInfo
@@ -89,7 +89,7 @@ type Parts struct {
 //
 // If any of the rendered documentation part HTML sizes exceeds the specified limit,
 // an error with ErrTooLarge in its chain will be returned.
-func Render(ctx context.Context, fset *token.FileSet, p *doc.Package, opt RenderOptions, info *gopdoc.GopInfo) (_ *Parts, err error) {
+func Render(ctx context.Context, fset *token.FileSet, p *doc.Package, opt RenderOptions) (_ *Parts, err error) {
 	defer derrors.Wrap(&err, "dochtml.RenderParts")
 
 	if opt.Limit == 0 {
@@ -97,7 +97,7 @@ func Render(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Render
 		opt.Limit = 10 * megabyte
 	}
 
-	funcs, data, links := renderInfo(ctx, fset, p, opt, info)
+	funcs, data, links := renderInfo(ctx, fset, p, opt)
 	p = data.Package
 	if docIsEmpty(p) {
 		return &Parts{}, nil
@@ -145,12 +145,13 @@ type item struct {
 	FuncId      string // for functions and methods
 }
 
-func packageToItems(p *doc.Package, exmap map[string][]*example, info *gopdoc.GopInfo) (consts, vars, funcs, types []*item) {
+func packageToItems(p *doc.Package, exmap map[string][]*example, opt RenderOptions) (consts, vars, funcs, types []*item) {
+
 	consts = valuesToItems(p.Consts)
 	vars = valuesToItems(p.Vars)
-	funcs = funcsToItems(p.Funcs, "Documentation-functionHeader", "", exmap, info)
+	funcs = funcsToItems(p.Funcs, "Documentation-functionHeader", "", exmap, opt)
 	for _, t := range p.Types {
-		types = append(types, typeToItem(t, exmap, info))
+		types = append(types, typeToItem(t, exmap, opt))
 	}
 	return consts, vars, funcs, types
 }
@@ -171,7 +172,7 @@ func valueToItem(v *doc.Value) *item {
 	}
 }
 
-func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*example, info *gopdoc.GopInfo) []*item {
+func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*example, opt RenderOptions) []*item {
 	var r []*item
 	for _, f := range fs {
 		fullName := f.Name
@@ -185,10 +186,8 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 			headerStart += " (" + f.Recv + ")"
 		}
 		funcId := fullName
-		if info != nil {
-			if overloadOrder, ok := info.OverloadFuncsOrder[f]; ok && overloadOrder > 0 {
-				funcId = fmt.Sprintf("%s__%d", fullName, overloadOrder)
-			}
+		if opt.FuncIdFunc != nil {
+			funcId = opt.FuncIdFunc(f, fullName)
 		}
 		i := &item{
 			Doc:          f.Doc,
@@ -207,7 +206,7 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 	return r
 }
 
-func typeToItem(t *doc.Type, exmap map[string][]*example, info *gopdoc.GopInfo) *item {
+func typeToItem(t *doc.Type, exmap map[string][]*example, opt RenderOptions) *item {
 	return &item{
 		Name:         t.Name,
 		FullName:     t.Name,
@@ -220,8 +219,8 @@ func typeToItem(t *doc.Type, exmap map[string][]*example, info *gopdoc.GopInfo) 
 		Examples:     exmap[t.Name],
 		Consts:       valuesToItems(t.Consts),
 		Vars:         valuesToItems(t.Vars),
-		Funcs:        funcsToItems(t.Funcs, "Documentation-typeFuncHeader", "", exmap, info),
-		Methods:      funcsToItems(t.Methods, "Documentation-typeMethodHeader", t.Name, exmap, info),
+		Funcs:        funcsToItems(t.Funcs, "Documentation-typeFuncHeader", "", exmap, opt),
+		Methods:      funcsToItems(t.Methods, "Documentation-typeMethodHeader", t.Name, exmap, opt),
 	}
 }
 
@@ -235,7 +234,7 @@ func docIsEmpty(p *doc.Package) bool {
 }
 
 // renderInfo returns the functions and data needed to render the doc.
-func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt RenderOptions, info *gopdoc.GopInfo) (map[string]any, TemplateData, func() []render.Link) {
+func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt RenderOptions) (map[string]any, TemplateData, func() []render.Link) {
 	// Make a copy to avoid modifying caller's *doc.Package.
 	p2 := *p
 	p = &p2
@@ -303,7 +302,7 @@ func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Re
 		Examples:    examples,
 		NoteHeaders: buildNoteHeaders(p.Notes),
 	}
-	data.Consts, data.Vars, data.Funcs, data.Types = packageToItems(p, examples.Map, info)
+	data.Consts, data.Vars, data.Funcs, data.Types = packageToItems(p, examples.Map, opt)
 	return funcs, data, r.Links
 }
 

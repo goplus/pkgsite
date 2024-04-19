@@ -50,7 +50,7 @@ func TestRender(t *testing.T) {
 	for _, pkg := range []string{"everydecl", "comments"} {
 		t.Run(pkg, func(t *testing.T) {
 			fset, d := mustLoadPackage(pkg)
-			parts, err := Render(ctx, fset, d, testRenderOptions, nil)
+			parts, err := Render(ctx, fset, d, testRenderOptions)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -84,7 +84,7 @@ func TestRender(t *testing.T) {
 func TestRenderDeprecated(t *testing.T) {
 	t.Helper()
 	fset, d := mustLoadPackage("deprecated")
-	parts, err := Render(context.Background(), fset, d, testRenderOptions, nil)
+	parts, err := Render(context.Background(), fset, d, testRenderOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,7 +96,8 @@ func TestRenderOverload(t *testing.T) {
 	LoadTemplates(templateFS)
 	fset, d := mustLoadPackage("overload")
 	doc, gopinfo := gopdoc.Transform(d)
-	parts, err := Render(context.Background(), fset, doc, testRenderOptions, gopinfo)
+	testRenderOptions.FuncIdFunc = gopinfo.FuncId
+	parts, err := Render(context.Background(), fset, doc, testRenderOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +124,7 @@ func TestExampleRender(t *testing.T) {
 	ctx := context.Background()
 	fset, d := mustLoadPackage("example_test")
 
-	parts, err := Render(ctx, fset, d, testRenderOptions, nil)
+	parts, err := Render(ctx, fset, d, testRenderOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
