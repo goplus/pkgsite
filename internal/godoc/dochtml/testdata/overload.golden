@@ -1,0 +1,378 @@
+<div class="Documentation-content js-docContent"> <section class="Documentation-index">
+<h3 id="pkg-index" class="Documentation-indexHeader">Index <a href="#pkg-index" aria-label="Go to Index">¶</a></h3>
+<ul class="Documentation-indexList">
+<li class="Documentation-indexConstants"><a href="#pkg-constants">Constants</a></li>
+<li class="Documentation-indexFunction">
+<a href="#Add">func Add(a int, b int) int</a></li>
+<li class="Documentation-indexFunction">
+<a href="#Add__1">func Add(a string, b string) string</a></li>
+<li class="Documentation-indexFunction">
+<a href="#Mul">func Mul(a int, b int) int</a></li>
+<li class="Documentation-indexFunction">
+<a href="#Mul__1">func Mul(a string, b string) string</a></li>
+<li class="Documentation-indexFunction">
+<a href="#Mul__2">func Mul(a float64, b float64) float64</a></li>
+<li class="Documentation-indexFunction">
+<a href="#MulFloat">func MulFloat(a float64, b float64) float64</a></li>
+<li class="Documentation-indexFunction">
+<a href="#MulInt">func MulInt(a int, b int) int</a></li>
+<li class="Documentation-indexType">
+<a href="#Foo">type Foo</a></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+<a href="#Foo.Division">func (a *Foo) Division(b int) *Foo</a></li>
+<li>
+<a href="#Foo.Division__1">func (a *Foo) Division(b *Foo) *Foo</a></li>
+<li>
+<a href="#Foo.DivisionFoo">func (a *Foo) DivisionFoo(b *Foo) *Foo</a></li>
+<li>
+<a href="#Foo.DivisionInt">func (a *Foo) DivisionInt(b int) *Foo</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+<a href="#N">type N</a></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+<a href="#N.OnKey">func (m *N) OnKey(a string, fn func())</a></li>
+<li>
+<a href="#N.OnKey__1">func (m *N) OnKey(a string, fn func(key string))</a></li>
+<li>
+<a href="#N.OnKey__2">func (m *N) OnKey(a []string, fn func())</a></li>
+</ul></li>
+</ul>
+</section><h3 tabindex="-1" id="pkg-constants" class="Documentation-constantsHeader">Constants <a href="#pkg-constants" aria-label="Go to Constants">¶</a></h3>
+<section class="Documentation-constants">
+<div class="Documentation-declaration">
+<span class="Documentation-declarationLink"><a class="Documentation-source" href="src">View Source</a></span>
+<pre><span id="GopPackage" data-kind="constant">const GopPackage = <a href="/builtin#true">true</a></span></pre>
+</div>
+<div class="Documentation-declaration">
+<span class="Documentation-declarationLink"><a class="Documentation-source" href="src">View Source</a></span>
+<pre><span id="Gopo_Foo_Division" data-kind="constant">const Gopo_Foo_Division = &#34;.DivisionInt,.DivisionFoo&#34;</span></pre>
+</div>
+<div class="Documentation-declaration">
+<span class="Documentation-declarationLink"><a class="Documentation-source" href="src">View Source</a></span>
+<pre><span id="Gopo_Mul" data-kind="constant">const Gopo_Mul = &#34;MulInt,,MulFloat&#34;</span></pre>
+</div>
+</section>
+<h3 tabindex="-1" id="pkg-variables" class="Documentation-variablesHeader">Variables <a href="#pkg-variables" aria-label="Go to Variables">¶</a></h3>
+<section class="Documentation-variables"><p class="Documentation-empty">This section is empty.</p></section>
+<h3 tabindex="-1" id="pkg-functions" class="Documentation-functionsHeader">Functions <a href="#pkg-functions" aria-label="Go to Functions">¶</a></h3>
+<section class="Documentation-functions"><div class="Documentation-function">
+<h4 tabindex="-1" id="Add" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">Add</a> <a class="Documentation-idLink" href="#Add" aria-label="Go to Add">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func Add(a <a href="/builtin#int">int</a>, b <a href="/builtin#int">int</a>) <a href="/builtin#int">int</a></pre>
+</div>
+<p>Add int
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="Add__1" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">Add</a> <a class="Documentation-idLink" href="#Add__1" aria-label="Go to Add__1">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func Add(a <a href="/builtin#string">string</a>, b <a href="/builtin#string">string</a>) <a href="/builtin#string">string</a></pre>
+</div>
+<p>Add string
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="Mul" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">Mul</a> <a class="Documentation-idLink" href="#Mul" aria-label="Go to Mul">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func Mul(a <a href="/builtin#int">int</a>, b <a href="/builtin#int">int</a>) <a href="/builtin#int">int</a></pre>
+</div>
+<p>Mut int
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="Mul__1" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">Mul</a> <a class="Documentation-idLink" href="#Mul__1" aria-label="Go to Mul__1">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func Mul(a <a href="/builtin#string">string</a>, b <a href="/builtin#string">string</a>) <a href="/builtin#string">string</a></pre>
+</div>
+<p>Mut string
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="Mul__2" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">Mul</a> <a class="Documentation-idLink" href="#Mul__2" aria-label="Go to Mul__2">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func Mul(a <a href="/builtin#float64">float64</a>, b <a href="/builtin#float64">float64</a>) <a href="/builtin#float64">float64</a></pre>
+</div>
+<p>Mut float
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="MulFloat" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">MulFloat</a> <a class="Documentation-idLink" href="#MulFloat" aria-label="Go to MulFloat">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func MulFloat(a <a href="/builtin#float64">float64</a>, b <a href="/builtin#float64">float64</a>) <a href="/builtin#float64">float64</a></pre>
+</div>
+<p>Mut float
+</p>
+</div><div class="Documentation-function">
+<h4 tabindex="-1" id="MulInt" data-kind="function" class="Documentation-functionHeader">
+<span>func <a class="Documentation-source" href="src">MulInt</a> <a class="Documentation-idLink" href="#MulInt" aria-label="Go to MulInt">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func MulInt(a <a href="/builtin#int">int</a>, b <a href="/builtin#int">int</a>) <a href="/builtin#int">int</a></pre>
+</div>
+<p>Mut int
+</p>
+</div></section>
+<h3 tabindex="-1" id="pkg-types" class="Documentation-typesHeader">Types <a href="#pkg-types" aria-label="Go to Types">¶</a></h3>
+<section class="Documentation-types"><div class="Documentation-type">
+<h4 tabindex="-1" id="Foo" data-kind="type" class="Documentation-typeHeader">
+<span>type <a class="Documentation-source" href="src">Foo</a> <a class="Documentation-idLink" href="#Foo" aria-label="Go to Foo">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>type Foo struct {
+}</pre>
+</div>
+<div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="Foo.Division" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*Foo) <a class="Documentation-source" href="src">Division</a> <a class="Documentation-idLink" href="#Foo.Division" aria-label="Go to Foo.Division">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (a *<a href="#Foo">Foo</a>) Division(b <a href="/builtin#int">int</a>) *<a href="#Foo">Foo</a></pre>
+</div>
+</div><div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="Foo.Division__1" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*Foo) <a class="Documentation-source" href="src">Division</a> <a class="Documentation-idLink" href="#Foo.Division__1" aria-label="Go to Foo.Division__1">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (a *<a href="#Foo">Foo</a>) Division(b *<a href="#Foo">Foo</a>) *<a href="#Foo">Foo</a></pre>
+</div>
+</div><div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="Foo.DivisionFoo" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*Foo) <a class="Documentation-source" href="src">DivisionFoo</a> <a class="Documentation-idLink" href="#Foo.DivisionFoo" aria-label="Go to Foo.DivisionFoo">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (a *<a href="#Foo">Foo</a>) DivisionFoo(b *<a href="#Foo">Foo</a>) *<a href="#Foo">Foo</a></pre>
+</div>
+</div><div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="Foo.DivisionInt" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*Foo) <a class="Documentation-source" href="src">DivisionInt</a> <a class="Documentation-idLink" href="#Foo.DivisionInt" aria-label="Go to Foo.DivisionInt">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (a *<a href="#Foo">Foo</a>) DivisionInt(b <a href="/builtin#int">int</a>) *<a href="#Foo">Foo</a></pre>
+</div>
+</div>
+</div><div class="Documentation-type">
+<h4 tabindex="-1" id="N" data-kind="type" class="Documentation-typeHeader">
+<span>type <a class="Documentation-source" href="src">N</a> <a class="Documentation-idLink" href="#N" aria-label="Go to N">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>type N struct {
+}</pre>
+</div>
+<div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="N.OnKey" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*N) <a class="Documentation-source" href="src">OnKey</a> <a class="Documentation-idLink" href="#N.OnKey" aria-label="Go to N.OnKey">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (m *<a href="#N">N</a>) OnKey(a <a href="/builtin#string">string</a>, fn func())</pre>
+</div>
+<p>OnKey string &amp;&amp; fn
+</p>
+</div><div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="N.OnKey__1" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*N) <a class="Documentation-source" href="src">OnKey</a> <a class="Documentation-idLink" href="#N.OnKey__1" aria-label="Go to N.OnKey__1">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (m *<a href="#N">N</a>) OnKey(a <a href="/builtin#string">string</a>, fn func(key <a href="/builtin#string">string</a>))</pre>
+</div>
+<p>OnKey string &amp;&amp; fn(string)
+</p>
+</div><div class="Documentation-typeMethod">
+<h4 tabindex="-1" id="N.OnKey__2" data-kind="method" class="Documentation-typeMethodHeader">
+<span>func (*N) <a class="Documentation-source" href="src">OnKey</a> <a class="Documentation-idLink" href="#N.OnKey__2" aria-label="Go to N.OnKey__2">¶</a></span>
+<span class="Documentation-sinceVersion">
+</span>
+</h4>
+<div class="Documentation-declaration">
+<pre>func (m *<a href="#N">N</a>) OnKey(a []<a href="/builtin#string">string</a>, fn func())</pre>
+</div>
+<p>OnKey string[] &amp;&amp; fn(string)
+</p>
+</div>
+</div></section></div>
+----
+<ul>
+<li class="DocNav-overview">
+<a href="#pkg-index" data-gtmc="doc outline link">
+Index
+</a>
+</li>
+<li class="DocNav-constants">
+<a href="#pkg-constants" data-gtmc="doc outline link">
+Constants
+</a>
+</li>
+<li class="DocNav-variables">
+<a href="#pkg-variables" data-gtmc="doc outline link">
+Variables
+</a>
+</li>
+<li class="DocNav-functions">
+<a href="#pkg-functions" data-gtmc="doc outline link">
+Functions
+</a>
+<ul>
+<li>
+<a href="#Add" title="Add(a, b)" data-gtmc="doc outline link">
+Add(a, b)
+</a>
+</li>
+<li>
+<a href="#Add__1" title="Add(a, b)" data-gtmc="doc outline link">
+Add(a, b)
+</a>
+</li>
+<li>
+<a href="#Mul" title="Mul(a, b)" data-gtmc="doc outline link">
+Mul(a, b)
+</a>
+</li>
+<li>
+<a href="#Mul__1" title="Mul(a, b)" data-gtmc="doc outline link">
+Mul(a, b)
+</a>
+</li>
+<li>
+<a href="#Mul__2" title="Mul(a, b)" data-gtmc="doc outline link">
+Mul(a, b)
+</a>
+</li>
+<li>
+<a href="#MulFloat" title="MulFloat(a, b)" data-gtmc="doc outline link">
+MulFloat(a, b)
+</a>
+</li>
+<li>
+<a href="#MulInt" title="MulInt(a, b)" data-gtmc="doc outline link">
+MulInt(a, b)
+</a>
+</li>
+</ul>
+</li>
+<li class="DocNav-types">
+<a href="#pkg-types" data-gtmc="doc outline link">
+Types
+</a>
+<ul>
+<li>
+<a href="#Foo" title="type Foo" data-gtmc="doc outline link">
+type Foo
+</a>
+<ul>
+<li>
+<a href="#Foo.Division" title="(a) Division(b)"
+data-gtmc="doc outline link">
+(a) Division(b)
+</a>
+</li>
+<li>
+<a href="#Foo.Division__1" title="(a) Division(b)"
+data-gtmc="doc outline link">
+(a) Division(b)
+</a>
+</li>
+<li>
+<a href="#Foo.DivisionFoo" title="(a) DivisionFoo(b)"
+data-gtmc="doc outline link">
+(a) DivisionFoo(b)
+</a>
+</li>
+<li>
+<a href="#Foo.DivisionInt" title="(a) DivisionInt(b)"
+data-gtmc="doc outline link">
+(a) DivisionInt(b)
+</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#N" title="type N" data-gtmc="doc outline link">
+type N
+</a>
+<ul>
+<li>
+<a href="#N.OnKey" title="(m) OnKey(a, fn)"
+data-gtmc="doc outline link">
+(m) OnKey(a, fn)
+</a>
+</li>
+<li>
+<a href="#N.OnKey__1" title="(m) OnKey(a, fn)"
+data-gtmc="doc outline link">
+(m) OnKey(a, fn)
+</a>
+</li>
+<li>
+<a href="#N.OnKey__2" title="(m) OnKey(a, fn)"
+data-gtmc="doc outline link">
+(m) OnKey(a, fn)
+</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+----
+<optgroup label="Documentation">
+<option value="pkg-index">Index</option>
+<option value="pkg-constants">Constants</option>
+</optgroup>
+<optgroup label="Functions">
+<option value="Add">Add(a, b)</option>
+<option value="Add">Add(a, b)</option>
+<option value="Mul">Mul(a, b)</option>
+<option value="Mul">Mul(a, b)</option>
+<option value="Mul">Mul(a, b)</option>
+<option value="MulFloat">MulFloat(a, b)</option>
+<option value="MulInt">MulInt(a, b)</option>
+</optgroup>
+<optgroup label="Types">
+<option value="Foo">type Foo</option>
+<option value="Foo.Division">(a) Division(b)</option>
+<option value="Foo.Division__1">(a) Division(b)</option>
+<option value="Foo.DivisionFoo">(a) DivisionFoo(b)</option>
+<option value="Foo.DivisionInt">(a) DivisionInt(b)</option>
+<option value="N">type N</option>
+<option value="N.OnKey">(m) OnKey(a, fn)</option>
+<option value="N.OnKey__1">(m) OnKey(a, fn)</option>
+<option value="N.OnKey__2">(m) OnKey(a, fn)</option>
+</optgroup>
