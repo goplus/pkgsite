@@ -53,8 +53,10 @@ func TestIsGopPackage(t *testing.T) {
 	if isGopPackage(&doc.Package{}) {
 		t.Fatal("isGopPackage: true?")
 	}
+	if _, gopInfo := Transform(&doc.Package{}); gopInfo != nil {
+		t.Fatal("go package should not get gopInfo after transform")
+	}
 }
-
 func TestDocRecv(t *testing.T) {
 	if _, ok := docRecv(&ast.Field{}); ok {
 		t.Fatal("docRecv: ok?")
