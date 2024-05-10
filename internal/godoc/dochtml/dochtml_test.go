@@ -25,6 +25,7 @@ import (
 	"github.com/google/safehtml/template"
 	"golang.org/x/net/html"
 	"golang.org/x/pkgsite/internal/godoc/dochtml/internal/render"
+	"golang.org/x/pkgsite/internal/gopdoc"
 	"golang.org/x/pkgsite/internal/testing/testhelper"
 )
 
@@ -88,6 +89,19 @@ func TestRenderDeprecated(t *testing.T) {
 		t.Fatal(err)
 	}
 	compareWithGolden(t, parts, "deprecated-on", *update)
+}
+
+func TestRenderOverload(t *testing.T) {
+	t.Helper()
+	LoadTemplates(templateFS)
+	fset, d := mustLoadPackage("overload")
+	doc, gopinfo := gopdoc.Transform(d)
+	testRenderOptions.FuncIdFunc = gopinfo.FuncId
+	parts, err := Render(context.Background(), fset, doc, testRenderOptions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compareWithGolden(t, parts, "overload", *update)
 }
 
 func compareWithGolden(t *testing.T, parts *Parts, name string, update bool) {

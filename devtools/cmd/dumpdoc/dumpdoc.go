@@ -125,7 +125,7 @@ func populateDoc(pd *PackageDoc, source []byte) error {
 	}
 	innerPath := strings.TrimPrefix(pd.ImportPath, pd.ModulePath+"/")
 	modInfo := &godoc.ModuleInfo{ModulePath: pd.ModulePath, ResolvedVersion: pd.Version}
-	dpkg, err := gpkg.DocPackage(innerPath, modInfo)
+	dpkg, _, err := gpkg.DocPackage(innerPath, modInfo)
 	if err != nil {
 		return err
 	}

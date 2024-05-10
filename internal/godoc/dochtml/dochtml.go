@@ -59,6 +59,7 @@ type RenderOptions struct {
 	FileLinkFunc     func(file string) (url string)
 	SourceLinkFunc   func(ast.Node) string
 	SinceVersionFunc func(name string) string
+	FuncIdFunc       func(fn *doc.Func, fullName string) (id string)
 	// ModInfo optionally specifies information about the module the package
 	// belongs to in order to render module-related documentation.
 	ModInfo      *ModuleInfo
@@ -141,14 +142,16 @@ type item struct {
 	// HTML-specific values, for types and functions
 	Kind        string // for data-kind attribute
 	HeaderClass string // class for header
+	FuncId      string // for functions and methods
 }
 
-func packageToItems(p *doc.Package, exmap map[string][]*example) (consts, vars, funcs, types []*item) {
+func packageToItems(p *doc.Package, exmap map[string][]*example, opt RenderOptions) (consts, vars, funcs, types []*item) {
+
 	consts = valuesToItems(p.Consts)
 	vars = valuesToItems(p.Vars)
-	funcs = funcsToItems(p.Funcs, "Documentation-functionHeader", "", exmap)
+	funcs = funcsToItems(p.Funcs, "Documentation-functionHeader", "", exmap, opt)
 	for _, t := range p.Types {
-		types = append(types, typeToItem(t, exmap))
+		types = append(types, typeToItem(t, exmap, opt))
 	}
 	return consts, vars, funcs, types
 }
@@ -169,7 +172,7 @@ func valueToItem(v *doc.Value) *item {
 	}
 }
 
-func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*example) []*item {
+func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*example, opt RenderOptions) []*item {
 	var r []*item
 	for _, f := range fs {
 		fullName := f.Name
@@ -182,6 +185,10 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 			kind = "method"
 			headerStart += " (" + f.Recv + ")"
 		}
+		funcId := fullName
+		if opt.FuncIdFunc != nil {
+			funcId = opt.FuncIdFunc(f, fullName)
+		}
 		i := &item{
 			Doc:          f.Doc,
 			Decl:         f.Decl,
@@ -192,13 +199,14 @@ func funcsToItems(fs []*doc.Func, hclass, typeName string, exmap map[string][]*e
 			Examples:     exmap[fullName],
 			Kind:         kind,
 			HeaderClass:  hclass,
+			FuncId:       funcId,
 		}
 		r = append(r, i)
 	}
 	return r
 }
 
-func typeToItem(t *doc.Type, exmap map[string][]*example) *item {
+func typeToItem(t *doc.Type, exmap map[string][]*example, opt RenderOptions) *item {
 	return &item{
 		Name:         t.Name,
 		FullName:     t.Name,
@@ -211,8 +219,8 @@ func typeToItem(t *doc.Type, exmap map[string][]*example) *item {
 		Examples:     exmap[t.Name],
 		Consts:       valuesToItems(t.Consts),
 		Vars:         valuesToItems(t.Vars),
-		Funcs:        funcsToItems(t.Funcs, "Documentation-typeFuncHeader", "", exmap),
-		Methods:      funcsToItems(t.Methods, "Documentation-typeMethodHeader", t.Name, exmap),
+		Funcs:        funcsToItems(t.Funcs, "Documentation-typeFuncHeader", "", exmap, opt),
+		Methods:      funcsToItems(t.Methods, "Documentation-typeMethodHeader", t.Name, exmap, opt),
 	}
 }
 
@@ -294,7 +302,7 @@ func renderInfo(ctx context.Context, fset *token.FileSet, p *doc.Package, opt Re
 		Examples:    examples,
 		NoteHeaders: buildNoteHeaders(p.Notes),
 	}
-	data.Consts, data.Vars, data.Funcs, data.Types = packageToItems(p, examples.Map)
+	data.Consts, data.Vars, data.Funcs, data.Types = packageToItems(p, examples.Map, opt)
 	return funcs, data, r.Links
 }
 
