@@ -118,6 +118,7 @@ func recreate(ctx context.Context, dbName string) error {
 		return err
 	}
 	return migrate(dbName)
+
 }
 
 func truncate(ctx context.Context, connectionInfo string) error {
