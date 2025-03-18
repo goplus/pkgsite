@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
@@ -105,6 +106,70 @@ type UnitPage struct {
 	// IsGoProject is true if the package is from the standard library or a
 	// golang.org sub-repository.
 	IsGoProject bool
+
+	LLPkg LLPkgInfo
+}
+
+type LLPkgInfo struct {
+	HasLLPkgConfig bool
+	CLibName       string
+	ConanPackage   string
+	ConanVersion   string
+	ConanLink      string
+}
+
+// fetchLLPkgInfo 检查是否存在 llpkg.cfg 文件并解析其内容
+func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfo, error) {
+	info := LLPkgInfo{
+		HasLLPkgConfig: false,
+	}
+
+	// 确定 llpkg.cfg 文件路径 - 与 go.mod 同级
+	// 我们需要找到模块的根目录 - 对应于模块路径
+	llpkgPath := "llpkg.cfg" // 相对于模块根目录的路径
+
+	// 尝试获取文件内容
+	fileContent, err := ds.GeclatContents(ctx, um.ModulePath, um.Version, llpkgPath) // 暂时还未实现
+	if err != nil {
+		// 文件不存在或无法访问，返回默认 info
+		log.Debugf(ctx, "LLPkg config not found at %s: %v", llpkgPath, err)
+		return info, nil
+	}
+
+	// 解析 JSON 内容
+	var config struct {
+		Upstream struct {
+			Installer struct {
+				Name   string `json:"name"`
+				Config struct {
+					Options string `json:"options"`
+				} `json:"config"`
+			} `json:"installer"`
+			Package struct {
+				Name    string `json:"name"`
+				Version string `json:"version"`
+			} `json:"package"`
+		} `json:"upstream"`
+	}
+
+	if err := json.Unmarshal([]byte(fileContent), &config); err != nil {
+		log.Errorf(ctx, "Error parsing llpkg.cfg: %v", err)
+		return info, err
+	}
+
+	// 验证并填充 LLPkgInfo
+	if config.Upstream.Installer.Name == "conan" && config.Upstream.Package.Name != "" {
+		info.HasLLPkgConfig = true
+		info.CLibName = config.Upstream.Package.Name
+		info.ConanPackage = config.Upstream.Package.Name
+		info.ConanVersion = config.Upstream.Package.Version
+
+		// 构建 Conan 链接
+		// 示例：https://conan.io/center/cjson
+		info.ConanLink = fmt.Sprintf("https://conan.io/center/%s", config.Upstream.Package.Name)
+	}
+
+	return info, nil
 }
 
 // serveUnitPage serves a unit page for a path.
@@ -209,6 +274,13 @@ func (s *Server) serveUnitPage(ctx context.Context, w http.ResponseWriter, r *ht
 		basePage.UseResponsiveLayout = true
 	}
 	lv := versions.LinkVersion(um.ModulePath, info.RequestedVersion, um.Version)
+
+	// fetch llpkg info
+	llpkgInfo, err := fetchLLPkgInfo(ctx, ds, um)
+	if err != nil {
+		log.Warningf(ctx, "Error fetching LLPkg info: %v", err)
+	}
+
 	page := UnitPage{
 		BasePage:              basePage,
 		Unit:                  um,
@@ -228,6 +300,7 @@ func (s *Server) serveUnitPage(ctx context.Context, w http.ResponseWriter, r *ht
 		DepsDevURL:            makeDepsDevURL(),
 		IsGoProject:           isGoProject(um.ModulePath),
 		IsLatestMinor:         lv == latestInfo.MinorVersion,
+		LLPkg:                 llpkgInfo,
 	}
 
 	// Show the banner if there was no error getting the latest major version,

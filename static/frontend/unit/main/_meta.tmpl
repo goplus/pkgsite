@@ -8,6 +8,25 @@
   <div class="UnitMeta">
     <h2 class="go-textLabel">Details</h2>
     {{template "unit-meta-details" .}}
+
+    <!-- LLPkg Info Section (conditionally rendered) -->
+    {{if .LLPkg.HasLLPkgConfig}}
+      <h2 class="go-textLabel">LLPkg Info</h2>
+      <div class="UnitMeta-llpkg">
+        <ul class="UnitMeta-llpkgDetails">
+          <li>
+            <span class="go-textSubtle">C Library:</span> {{.LLPkg.CLibName}}
+          </li>
+          <li>
+            <a href="{{.LLPkg.ConanLink}}" title="View on Conan" target="_blank" rel="noopener">
+              <img class="go-Icon" height="24" width="24" src="/static/shared/icon/link_gm_grey_24dp.svg" alt="">
+              Conan Package: {{.LLPkg.ConanPackage}} {{.LLPkg.ConanVersion}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    {{end}}
+
     <h2 class="go-textLabel">Repository</h2>
     <div class="UnitMeta-repo">
       {{if .Details.RepositoryURL}}
