@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"net/http"
 	"strings"
@@ -117,6 +118,20 @@ func fetchLazyModule(ctx context.Context, modulePath, requestedVersion string, m
 		lm.ModuleInfo.HasGoMod = true
 	} else {
 		lm.ModuleInfo.HasGoMod = hasGoModFile(contentDir)
+	}
+
+	// check if the llpkg.cfg exists in the module zip.
+	llpkgCfg, err := contentDir.Open("llpkg.cfg")
+	if err != nil {
+		lm.LLPkgConfig = nil
+	} else {
+		defer llpkgCfg.Close()
+		content, err := io.ReadAll(llpkgCfg)
+
+		if err != nil {
+			return lm, fmt.Errorf("reading llpkg.cfg: %w", err)
+		}
+		lm.LLPkgConfig = content
 	}
 
 	// getGoModPath may return a non-empty goModPath even if the error is

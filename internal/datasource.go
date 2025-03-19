@@ -6,6 +6,7 @@ package internal
 
 import (
 	"context"
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"time"
 )
 
@@ -98,7 +99,7 @@ type DataSource interface {
 	Search(ctx context.Context, q string, opts SearchOptions) (_ []*SearchResult, err error)
 
 	// GetLLPkgConfig gets the LL-PkgConfig file through module version.
-	GetLLPkgConfig(ctx context.Context, modulePath, version string) ([]byte, error)
+	GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error)
 }
 
 type SearchSupport int

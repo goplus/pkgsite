@@ -1,6 +1,8 @@
 module golang.org/x/pkgsite
 
-go 1.19
+go 1.22.0
+
+toolchain go1.23.0
 
 require (
 	cloud.google.com/go/cloudtasks v1.10.0
@@ -22,6 +24,7 @@ require (
 	github.com/google/go-replayers/httpreplay v1.0.0
 	github.com/google/licensecheck v0.3.1
 	github.com/google/safehtml v0.0.3-0.20211026203422-d6f0e11a5516
+	github.com/goplus/llpkgstore v0.0.0-20250319070647-62cee03708af
 	github.com/jackc/pgconn v1.10.1
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jba/templatecheck v0.6.0

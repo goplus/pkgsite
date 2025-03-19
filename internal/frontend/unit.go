@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"path"
 	"strings"
 	"time"
 
@@ -127,45 +126,24 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 	// 从数据库获取llpkg.cfg内容
 	fileContent, err := ds.GetLLPkgConfig(ctx, um.ModulePath, um.Version)
 	if err != nil {
-		log.Debugf(ctx, "Error fetching LLPkg config: %v", err)
+		log.Debugf(ctx, "Error fetching LLPkg fileContent: %v", err)
 		return info, nil
 	}
 
-	if fileContent == "" {
+	if fileContent == nil {
 		// 没有llpkg.cfg文件
 		return info, nil
 	}
 
-	// 解析JSON内容
-	var config struct {
-		Upstream struct {
-			Installer struct {
-				Name   string `json:"name"`
-				Config struct {
-					Options string `json:"options"`
-				} `json:"config"`
-			} `json:"installer"`
-			Package struct {
-				Name    string `json:"name"`
-				Version string `json:"version"`
-			} `json:"package"`
-		} `json:"upstream"`
-	}
-
-	if err := json.Unmarshal([]byte(fileContent), &config); err != nil {
-		log.Errorf(ctx, "Error parsing llpkg.cfg: %v", err)
-		return info, err
-	}
-
 	// 验证并填充LLPkgInfo
-	if config.Upstream.Installer.Name == "conan" && config.Upstream.Package.Name != "" {
+	if fileContent.Upstream.Installer.Name == "conan" && fileContent.Upstream.Package.Name != "" {
 		info.HasLLPkgConfig = true
-		info.CLibName = config.Upstream.Package.Name
-		info.ConanPackage = config.Upstream.Package.Name
-		info.ConanVersion = config.Upstream.Package.Version
+		info.CLibName = fileContent.Upstream.Package.Name
+		info.ConanPackage = fileContent.Upstream.Package.Name
+		info.ConanVersion = fileContent.Upstream.Package.Version
 
 		// 构建Conan链接
-		info.ConanLink = fmt.Sprintf("https://conan.io/center/%s", config.Upstream.Package.Name)
+		info.ConanLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
 	}
 
 	return info, nil
