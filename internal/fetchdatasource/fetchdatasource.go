@@ -11,6 +11,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"sort"
 	"strconv"
 	"strings"
@@ -392,4 +393,8 @@ func (ds *FetchDataSource) Search(ctx context.Context, q string, opts internal.S
 	}
 
 	return results, nil
+}
+
+func (ds *FetchDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
+	return nil, nil
 }
