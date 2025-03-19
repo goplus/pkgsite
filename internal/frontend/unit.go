@@ -118,25 +118,25 @@ type LLPkgInfo struct {
 	ConanLink      string
 }
 
-// fetchLLPkgInfo 检查是否存在 llpkg.cfg 文件并解析其内容
+// fetchLLPkgInfo 获取模块的llpkg.cfg文件信息
 func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfo, error) {
 	info := LLPkgInfo{
 		HasLLPkgConfig: false,
 	}
 
-	// 确定 llpkg.cfg 文件路径 - 与 go.mod 同级
-	// 我们需要找到模块的根目录 - 对应于模块路径
-	llpkgPath := "llpkg.cfg" // 相对于模块根目录的路径
-
-	// 尝试获取文件内容
-	fileContent, err := ds.GeclatContents(ctx, um.ModulePath, um.Version, llpkgPath) // 暂时还未实现
+	// 从数据库获取llpkg.cfg内容
+	fileContent, err := ds.GetLLPkgConfig(ctx, um.ModulePath, um.Version)
 	if err != nil {
-		// 文件不存在或无法访问，返回默认 info
-		log.Debugf(ctx, "LLPkg config not found at %s: %v", llpkgPath, err)
+		log.Debugf(ctx, "Error fetching LLPkg config: %v", err)
 		return info, nil
 	}
 
-	// 解析 JSON 内容
+	if fileContent == "" {
+		// 没有llpkg.cfg文件
+		return info, nil
+	}
+
+	// 解析JSON内容
 	var config struct {
 		Upstream struct {
 			Installer struct {
@@ -157,15 +157,14 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 		return info, err
 	}
 
-	// 验证并填充 LLPkgInfo
+	// 验证并填充LLPkgInfo
 	if config.Upstream.Installer.Name == "conan" && config.Upstream.Package.Name != "" {
 		info.HasLLPkgConfig = true
 		info.CLibName = config.Upstream.Package.Name
 		info.ConanPackage = config.Upstream.Package.Name
 		info.ConanVersion = config.Upstream.Package.Version
 
-		// 构建 Conan 链接
-		// 示例：https://conan.io/center/cjson
+		// 构建Conan链接
 		info.ConanLink = fmt.Sprintf("https://conan.io/center/%s", config.Upstream.Package.Name)
 	}
 

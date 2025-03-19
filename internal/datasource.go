@@ -96,6 +96,9 @@ type DataSource interface {
 	SearchSupport() SearchSupport
 	// Search searches for packages matching the given query.
 	Search(ctx context.Context, q string, opts SearchOptions) (_ []*SearchResult, err error)
+
+	// GetLLPkgConfig gets the LL-PkgConfig file through module version.
+	GetLLPkgConfig(ctx context.Context, modulePath, version string) ([]byte, error)
 }
 
 type SearchSupport int

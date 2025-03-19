@@ -249,13 +249,15 @@ func insertModule(ctx context.Context, db *database.DB, m *internal.Module) (_ i
 			source_info,
 			redistributable,
 			has_go_mod,
-			incompatible)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+			incompatible,
+            llpkg_config)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 		ON CONFLICT
 			(module_path, version)
 		DO UPDATE SET
 			source_info=excluded.source_info,
-			redistributable=excluded.redistributable
+			redistributable=excluded.redistributable,
+			llpkg_config=excluded.llpkg_config
 		RETURNING id`,
 		m.ModulePath,
 		m.Version,
@@ -267,6 +269,7 @@ func insertModule(ctx context.Context, db *database.DB, m *internal.Module) (_ i
 		m.IsRedistributable,
 		m.HasGoMod,
 		version.IsIncompatible(m.Version),
+		m.LLPkgConfig,
 	).Scan(&moduleID)
 	if err != nil {
 		return 0, err
