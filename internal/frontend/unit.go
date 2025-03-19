@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"net/http"
 	"strings"
 	"time"
@@ -106,20 +107,19 @@ type UnitPage struct {
 	// golang.org sub-repository.
 	IsGoProject bool
 
-	LLPkg LLPkgInfo
+	LLPkg LLPkgInfoOnPage
 }
 
-type LLPkgInfo struct {
-	HasLLPkgConfig bool
-	CLibName       string
-	ConanPackage   string
-	ConanVersion   string
-	ConanLink      string
+type LLPkgInfoOnPage struct {
+	HasLLPkgConfig  bool
+	LLPkgCfgFileURL string
+	UpstreamLink    string
+	RawDetail       llpkgcfg.LLPkgConfig
 }
 
 // fetchLLPkgInfo 获取模块的llpkg.cfg文件信息
-func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfo, error) {
-	info := LLPkgInfo{
+func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfoOnPage, error) {
+	info := LLPkgInfoOnPage{
 		HasLLPkgConfig: false,
 	}
 
@@ -136,14 +136,16 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 	}
 
 	// 验证并填充LLPkgInfo
-	if fileContent.Upstream.Installer.Name == "conan" && fileContent.Upstream.Package.Name != "" {
+	if fileContent.Upstream.Package.Name != "" {
 		info.HasLLPkgConfig = true
-		info.CLibName = fileContent.Upstream.Package.Name
-		info.ConanPackage = fileContent.Upstream.Package.Name
-		info.ConanVersion = fileContent.Upstream.Package.Version
+		info.RawDetail = *fileContent
+		info.LLPkgCfgFileURL = um.SourceInfo.ModuleURL() + "/llpkg.cfg"
+	}
 
-		// 构建Conan链接
-		info.ConanLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
+	if fileContent.Upstream.Installer.Name == "conan" {
+		info.UpstreamLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
+	} else {
+		info.UpstreamLink = ""
 	}
 
 	return info, nil
