@@ -117,13 +117,12 @@ type LLPkgInfoOnPage struct {
 	RawDetail       llpkgcfg.LLPkgConfig
 }
 
-// fetchLLPkgInfo 获取模块的llpkg.cfg文件信息
+// fetchLLPkgInfo fetches the LL-PkgConfig file content for a given module path and version from database.
 func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfoOnPage, error) {
 	info := LLPkgInfoOnPage{
 		HasLLPkgConfig: false,
 	}
 
-	// 从数据库获取llpkg.cfg内容
 	fileContent, err := ds.GetLLPkgConfig(ctx, um.ModulePath, um.Version)
 	if err != nil {
 		log.Debugf(ctx, "Error fetching LLPkg fileContent: %v", err)
@@ -131,11 +130,9 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 	}
 
 	if fileContent == nil {
-		// 没有llpkg.cfg文件
 		return info, nil
 	}
 
-	// 验证并填充LLPkgInfo
 	if fileContent.Upstream.Package.Name != "" {
 		info.HasLLPkgConfig = true
 		info.RawDetail = *fileContent
