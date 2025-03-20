@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"errors"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"net/http"
 	"strings"
 
@@ -66,6 +67,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
 		return
 	}
+	if urlPath := llpkgRedirectURL(urlInfo.FullPath); urlPath != "" {
+		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
+		return
+	}
 	if err := checkExcluded(ctx, ds, urlInfo.FullPath, urlInfo.RequestedVersion); err != nil {
 		return err
 	}
@@ -84,6 +89,13 @@ func stdlibRedirectURL(fullPath string) string {
 		return ""
 	}
 	return "/" + urlPath2
+}
+
+func llpkgRedirectURL(fullPath string) string {
+	if fullPath == llpkg.GitHubRepo {
+		return "/llpkg"
+	}
+	return ""
 }
 
 func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, version string) error {
