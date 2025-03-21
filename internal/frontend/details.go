@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"errors"
+	"golang.org/x/pkgsite/internal/version"
 	"net/http"
 	"strings"
 
@@ -34,6 +35,11 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		s.serveHomepage(ctx, w, r)
 		return nil
 	}
+
+	if r.URL.Path == "/llpkg" {
+		return s.serveLLPkg(ctx, w, r, ds)
+	}
+
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
 		url.Path = strings.TrimSuffix(r.URL.Path, "/")
@@ -96,4 +102,14 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 		return &serrors.ServerError{Status: http.StatusNotFound}
 	}
 	return nil
+}
+
+func (s *Server) serveLLPkg(ctx context.Context, w http.ResponseWriter, r *http.Request, ds internal.DataSource) error {
+	urlInfo := &urlinfo.URLPathInfo{
+		FullPath:         "github.com/goplus/llpkg",
+		ModulePath:       "github.com/goplus/llpkg",
+		RequestedVersion: version.Latest,
+	}
+
+	return s.serveUnitPage(ctx, w, r, ds, urlInfo)
 }
