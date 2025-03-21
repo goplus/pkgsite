@@ -36,10 +36,6 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		return nil
 	}
 
-	if r.URL.Path == "/llpkg" {
-		return s.serveLLPkg(ctx, w, r, ds)
-	}
-
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
 		url.Path = strings.TrimSuffix(r.URL.Path, "/")
@@ -72,6 +68,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
 		return
 	}
+	if urlPath := llpkgRedirectURL(urlInfo.FullPath); urlPath != "" {
+		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
+		return
+	}
 	if err := checkExcluded(ctx, ds, urlInfo.FullPath, urlInfo.RequestedVersion); err != nil {
 		return err
 	}
@@ -92,6 +92,13 @@ func stdlibRedirectURL(fullPath string) string {
 	return "/" + urlPath2
 }
 
+func llpkgRedirectURL(fullPath string) string {
+	if fullPath == "github.com/goplus/llpkg" {
+		return "/llpkg"
+	}
+	return ""
+}
+
 func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, version string) error {
 	db, ok := ds.(internal.PostgresDB)
 	if !ok {
@@ -104,12 +111,14 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 	return nil
 }
 
-func (s *Server) serveLLPkg(ctx context.Context, w http.ResponseWriter, r *http.Request, ds internal.DataSource) error {
+func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) error {
 	urlInfo := &urlinfo.URLPathInfo{
 		FullPath:         "github.com/goplus/llpkg",
 		ModulePath:       "github.com/goplus/llpkg",
 		RequestedVersion: version.Latest,
 	}
+
+	ctx := r.Context()
 
 	return s.serveUnitPage(ctx, w, r, ds, urlInfo)
 }
