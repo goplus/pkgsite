@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"errors"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/version"
 	"net/http"
 	"strings"
@@ -95,7 +96,7 @@ func stdlibRedirectURL(fullPath string) string {
 }
 
 func llpkgRedirectURL(fullPath string) string {
-	if fullPath == "github.com/goplus/llpkg" {
+	if fullPath == llpkg.GitHubRepo {
 		return "/llpkg"
 	}
 	return ""
