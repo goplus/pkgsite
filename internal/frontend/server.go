@@ -615,6 +615,8 @@ func (s *Server) renderErrorPage(ctx context.Context, status int, templateName s
 func (s *Server) servePage(ctx context.Context, w http.ResponseWriter, templateName string, page any) {
 	defer stats.Elapsed(ctx, "servePage")()
 
+	fmt.Println("servePage", templateName, page)
+
 	buf, err := s.renderPage(ctx, templateName, page)
 	if err != nil {
 		log.Errorf(ctx, "s.renderPage(%q, %+v): %v", templateName, page, err)

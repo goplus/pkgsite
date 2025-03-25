@@ -48,6 +48,15 @@ type Info struct {
 	templates urlTemplates // for building URLs
 }
 
+// NewInfo creates a new Info struct with the given repoURL, moduleDir, and commit.
+func NewInfo(repoURL, moduleDir, commit string) *Info {
+	return &Info{
+		repoURL:   repoURL,
+		moduleDir: moduleDir,
+		commit:    commit,
+	}
+}
+
 // RepoURL returns a URL for the home page of the repository.
 func (i *Info) RepoURL() string {
 	if i == nil {

@@ -7,15 +7,13 @@ package frontend
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
-	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/google/safehtml/template"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/llpkg"
+	"golang.org/x/pkgsite/internal/source"
 
 	"golang.org/x/pkgsite/internal/frontend/page"
 	"golang.org/x/pkgsite/internal/frontend/serrors"
@@ -117,103 +115,76 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 	return nil
 }
 
-// serveLLPkg 处理 /llpkg 路径的请求，显示 LLPkg 包的目录列表
+// TODO: wait for llpkgstore's cache manager to be ready
+// serveLLPkg fake the llpkg page with static content
 func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
 	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
+	ctx := r.Context()
 
-	// 1. 创建基础页面
+	// init a base page
 	basePage := s.newBasePage(r, "LLPkg")
 	basePage.AllowWideContent = true
+	basePage.UseResponsiveLayout = true
 
-	// 2. 构建面包屑导航，添加 LLPkg 部分
-	breadcrumb := breadcrumb{
-		Links: []link{
-			{Href: "/", Body: "Discover Packages"},
-		},
-		Current:  "LLPkg",
-		CopyData: "llpkg",
-	}
-
-	// 3. 定义 LLPkg 数据
-	llpkgData := map[string]struct {
-		Versions []struct {
-			C  string   `json:"c"`
-			Go []string `json:"go"`
-		} `json:"versions"`
-	}{
-		"cjson": {
-			Versions: []struct {
-				C  string   `json:"c"`
-				Go []string `json:"go"`
-			}{
-				{C: "1.3", Go: []string{"v0.1.0", "v0.1.1"}},
-				{C: "1.3.1", Go: []string{"v1.1.0"}},
-			},
-		},
-		"bjson": {
-			Versions: []struct {
-				C  string   `json:"c"`
-				Go []string `json:"go"`
-			}{
-				{C: "1.2", Go: []string{"v0.1.0", "v0.1.1"}},
-				{C: "1.2.1", Go: []string{"v1.1.0"}},
-			},
+	// init a unit meta
+	unit := &internal.UnitMeta{
+		Path: "llpkg",
+		Name: "",
+		ModuleInfo: internal.ModuleInfo{
+			ModulePath:        llpkg.GitHubRepo,
+			Version:           "v0.0.0",
+			HasGoMod:          true,
+			IsRedistributable: true,
+			SourceInfo:        source.NewInfo("https://github.com/goplus/llpkg", "src", "v0.0.0"),
+			Deprecated:        false,
+			Retracted:         false,
 		},
 	}
+	breadcrumb := displayBreadcrumb(unit, "latest")
 
-	// 4. 构建目录信息
-	var subdirectories []*DirectoryInfo
-	for packageName, packageInfo := range llpkgData {
-		// 获取最新版本信息
-		latestCVersion := ""
-		latestGoVersion := ""
-		for _, v := range packageInfo.Versions {
-			for _, goVer := range v.Go {
-				if compareVersions(goVer, latestGoVersion) > 0 {
-					latestGoVersion = goVer
-				}
-			}
-		}
-		for _, v := range packageInfo.Versions {
-			if compareVersions(v.C, latestCVersion) > 0 {
-				latestCVersion = v.C
-			}
-		}
-
-		// 构建目录项
-		subdirectories = append(subdirectories, &DirectoryInfo{
-			Suffix:   packageName,
-			URL:      "/github.com/goplus/llpkg/" + packageName,
-			Synopsis: fmt.Sprintf("C:%s -> Go:%s", latestCVersion, latestGoVersion),
-			IsModule: false,
-		})
-	}
-
-	// 排序目录项以确保显示顺序一致
-	sort.Slice(subdirectories, func(i, j int) bool {
-		return subdirectories[i].Suffix < subdirectories[j].Suffix
-	})
-
-	// 5. 创建目录结构
+	// init directories from llpkgstore.json
 	directories := []*Directory{
 		{
-			Prefix:         "",
-			Root:           nil,
-			Subdirectories: subdirectories,
+			Prefix: "ajson",
+			Root: &DirectoryInfo{
+				Suffix:     "ajson",
+				URL:        "/github.com/NEKO-CwC/llpkgstore/ajson",
+				Synopsis:   "C:1.3 -> Go:v0.1.0",
+				IsModule:   true,
+				IsInternal: false,
+			},
+		},
+		{
+			Prefix: "bjson",
+			Root: &DirectoryInfo{
+				Suffix:     "bjson",
+				URL:        "/github.com/NEKO-CwC/llpkgstore/bjson",
+				Synopsis:   "C:1.2 -> Go:v0.1.0",
+				IsModule:   true,
+				IsInternal: false,
+			},
 		},
 	}
 
-	// 6. 创建详情对象，只包含目录部分
+	// init main details
 	emptyHTML := template.MustParseAndExecuteToHTML("")
 	mainDetails := &MainDetails{
-		Directories: directories,
-		Readme:      emptyHTML,
-		DocBody:     emptyHTML,
+		Directories:     directories,
+		Readme:          emptyHTML,
+		DocBody:         emptyHTML,
+		Licenses:        []LicenseMetadata{},
+		RepositoryURL:   llpkg.GitHubRepo,
+		SourceURL:       llpkg.GitHubRepo,
+		ModFileURL:      llpkg.GitHubRepo,
+		IsPackage:       false,
+		IsTaggedVersion: false,
+		IsStableVersion: true,
 	}
 
-	// 7. 创建完整页面
+	// build the full page
 	page := UnitPage{
 		BasePage:         basePage,
+		Unit:             unit,
 		Breadcrumb:       breadcrumb,
 		Title:            "LLPkg",
 		URLPath:          "/llpkg",
@@ -225,70 +196,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 		Details:          mainDetails,
 	}
 
-	// 8. 渲染页面
-	s.servePage(r.Context(), w, "unit", page)
+	// render the full page
+	s.servePage(ctx, w, "unit/main", page)
 	return nil
-}
-
-// 辅助函数: 找出最新版本
-func findLatestVersion(versions []struct {
-	C  string
-	Go []string
-},
-	getVersion func(v struct {
-		C  string
-		Go []string
-	}) string) string {
-
-	if len(versions) == 0 {
-		return ""
-	}
-
-	latest := getVersion(versions[0])
-	for _, v := range versions {
-		ver := getVersion(v)
-		if compareVersions(ver, latest) > 0 {
-			latest = ver
-		}
-	}
-	return latest
-}
-
-// 辅助函数: 比较版本号
-func compareVersions(v1, v2 string) int {
-	if v2 == "" {
-		return 1 // 任何版本都大于空版本
-	}
-
-	// 去掉版本前缀 'v'
-	v1Clean := strings.TrimPrefix(v1, "v")
-	v2Clean := strings.TrimPrefix(v2, "v")
-
-	// 分割版本号
-	parts1 := strings.Split(v1Clean, ".")
-	parts2 := strings.Split(v2Clean, ".")
-
-	// 比较每个部分
-	maxLen := len(parts1)
-	if len(parts2) > maxLen {
-		maxLen = len(parts2)
-	}
-
-	for i := 0; i < maxLen; i++ {
-		var n1, n2 int
-		if i < len(parts1) {
-			n1, _ = strconv.Atoi(parts1[i])
-		}
-		if i < len(parts2) {
-			n2, _ = strconv.Atoi(parts2[i])
-		}
-
-		if n1 > n2 {
-			return 1
-		} else if n1 < n2 {
-			return -1
-		}
-	}
-
-	return 0
 }
