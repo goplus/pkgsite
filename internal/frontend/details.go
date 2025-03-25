@@ -19,8 +19,6 @@ import (
 
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/stdlib"
-
-	store "github.com/goplus/llpkgstore/metadata"
 )
 
 // serveDetails handles requests for package/directory/module details pages. It
