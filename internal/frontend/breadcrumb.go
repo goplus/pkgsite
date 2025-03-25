@@ -6,9 +6,11 @@ package frontend
 
 import (
 	"path"
+	"strings"
 
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/frontend/versions"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/stdlib"
 	"golang.org/x/pkgsite/internal/version"
 )
@@ -19,6 +21,8 @@ func displayBreadcrumb(um *internal.UnitMeta, requestedVersion string) breadcrum
 	bc := breadcrumbPath(um.Path, um.ModulePath, requestedVersion)
 	if um.ModulePath == stdlib.ModulePath && um.Path != stdlib.ModulePath {
 		bc.Links = append([]link{{Href: "/std", Body: "Standard library"}}, bc.Links...)
+	} else if (um.ModulePath == llpkg.ModulePath || strings.Contains(um.ModulePath, llpkg.GitHubRepo)) && um.Path != llpkg.ModulePath {
+		bc.Links = append([]link{{Href: "/llpkg", Body: "LLPkg library"}}, bc.Links...)
 	}
 	bc.Links = append([]link{{Href: "/", Body: "Discover Packages"}}, bc.Links...)
 	return bc
