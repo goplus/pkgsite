@@ -10,6 +10,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/safehtml/template"
+	"golang.org/x/pkgsite/internal/derrors"
+	"golang.org/x/pkgsite/internal/llpkg"
+	"golang.org/x/pkgsite/internal/source"
+
 	"golang.org/x/pkgsite/internal/frontend/page"
 	"golang.org/x/pkgsite/internal/frontend/serrors"
 	"golang.org/x/pkgsite/internal/frontend/urlinfo"
@@ -34,6 +39,7 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		s.serveHomepage(ctx, w, r)
 		return nil
 	}
+
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
 		url.Path = strings.TrimSuffix(r.URL.Path, "/")
@@ -66,6 +72,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
 		return
 	}
+	if urlPath := llpkgRedirectURL(urlInfo.FullPath); urlPath != "" {
+		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
+		return
+	}
 	if err := checkExcluded(ctx, ds, urlInfo.FullPath, urlInfo.RequestedVersion); err != nil {
 		return err
 	}
@@ -86,6 +96,13 @@ func stdlibRedirectURL(fullPath string) string {
 	return "/" + urlPath2
 }
 
+func llpkgRedirectURL(fullPath string) string {
+	if fullPath == llpkg.GitHubRepo {
+		return "/llpkg"
+	}
+	return ""
+}
+
 func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, version string) error {
 	db, ok := ds.(internal.PostgresDB)
 	if !ok {
@@ -95,5 +112,91 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 		// Return NotFound; don't let the user know that the package was excluded.
 		return &serrors.ServerError{Status: http.StatusNotFound}
 	}
+	return nil
+}
+
+// TODO: wait for llpkgstore's cache manager to be ready
+// serveLLPkg fake the llpkg page with static content
+func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
+	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
+	ctx := r.Context()
+
+	// init a base page
+	basePage := s.newBasePage(r, "LLPkg")
+	basePage.AllowWideContent = true
+	basePage.UseResponsiveLayout = true
+
+	// init a unit meta
+	unit := &internal.UnitMeta{
+		Path: "llpkg",
+		Name: "",
+		ModuleInfo: internal.ModuleInfo{
+			ModulePath:        llpkg.GitHubRepo,
+			Version:           "v0.0.0",
+			HasGoMod:          true,
+			IsRedistributable: true,
+			SourceInfo:        source.NewInfo("https://github.com/goplus/llpkg", "src", "v0.0.0"),
+			Deprecated:        false,
+			Retracted:         false,
+		},
+	}
+	breadcrumb := displayBreadcrumb(unit, "latest")
+
+	// init directories from llpkgstore.json
+	directories := []*Directory{
+		{
+			Prefix: "ajson",
+			Root: &DirectoryInfo{
+				Suffix:     "ajson",
+				URL:        "/github.com/NEKO-CwC/llpkgstore/ajson",
+				Synopsis:   "C:1.3 -> Go:v0.1.0",
+				IsModule:   true,
+				IsInternal: false,
+			},
+		},
+		{
+			Prefix: "bjson",
+			Root: &DirectoryInfo{
+				Suffix:     "bjson",
+				URL:        "/github.com/NEKO-CwC/llpkgstore/bjson",
+				Synopsis:   "C:1.2 -> Go:v0.1.0",
+				IsModule:   true,
+				IsInternal: false,
+			},
+		},
+	}
+
+	// init main details
+	emptyHTML := template.MustParseAndExecuteToHTML("")
+	mainDetails := &MainDetails{
+		Directories:     directories,
+		Readme:          emptyHTML,
+		DocBody:         emptyHTML,
+		Licenses:        []LicenseMetadata{},
+		RepositoryURL:   llpkg.GitHubRepo,
+		SourceURL:       llpkg.GitHubRepo,
+		ModFileURL:      llpkg.GitHubRepo,
+		IsPackage:       false,
+		IsTaggedVersion: false,
+		IsStableVersion: true,
+	}
+
+	// build the full page
+	page := UnitPage{
+		BasePage:         basePage,
+		Unit:             unit,
+		Breadcrumb:       breadcrumb,
+		Title:            "LLPkg",
+		URLPath:          "/llpkg",
+		CanonicalURLPath: "/llpkg",
+		PageType:         "llpkg",
+		PageLabels:       []string{"LLPkg"},
+		CanShowDetails:   true,
+		SelectedTab:      unitTabLookup[tabMain],
+		Details:          mainDetails,
+	}
+
+	// render the full page
+	s.servePage(ctx, w, "unit/main", page)
 	return nil
 }
