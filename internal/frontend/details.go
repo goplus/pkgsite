@@ -18,6 +18,8 @@ import (
 
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/stdlib"
+
+	store "github.com/goplus/llpkgstore/metadata"
 )
 
 // serveDetails handles requests for package/directory/module details pages. It
@@ -114,7 +116,7 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) error {
 	urlInfo := &urlinfo.URLPathInfo{
 		FullPath:         "github.com/goplus/llpkg",
-		ModulePath:       "github.com/goplus/llpkg",
+		ModulePath:       "unknownModulePath",
 		RequestedVersion: version.Latest,
 	}
 

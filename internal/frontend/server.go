@@ -159,6 +159,7 @@ func (s *Server) Install(handle func(string, http.Handler), cacher Cacher, authV
 		fetchHandler  http.Handler
 		searchHandler http.Handler = s.errorHandler(s.serveSearch)
 		vulnHandler   http.Handler = s.errorHandler(s.serveVuln)
+		llpkgHandler  http.Handler = s.errorHandler(s.serveLLPkg)
 	)
 	if s.fetchServer != nil {
 		fetchHandler = s.errorHandler(s.fetchServer.ServeFetch)
@@ -221,7 +222,7 @@ func (s *Server) Install(handle func(string, http.Handler), cacher Cacher, authV
 		handle("/search-stats/",
 			stats.Stats()(http.StripPrefix("/search-stats", s.errorHandler(s.serveSearch))))
 	}
-	handle("/llpkg", detailHandler)
+	handle("/llpkg", llpkgHandler)
 	handle("/robots.txt", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		http.ServeContent(w, r, "", time.Time{}, strings.NewReader(`User-agent: *
