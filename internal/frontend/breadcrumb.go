@@ -23,6 +23,7 @@ func displayBreadcrumb(um *internal.UnitMeta, requestedVersion string) breadcrum
 		bc.Links = append([]link{{Href: "/std", Body: "Standard library"}}, bc.Links...)
 	} else if strings.Contains(um.ModulePath, llpkg.GitHubRepo) && um.Path != llpkg.ModulePath {
 		bc.Links = append([]link{{Href: "/llpkg", Body: "LLPkg library"}}, bc.Links...)
+		bc.Current = strings.TrimPrefix(um.Path, llpkg.GitHubRepo+"/")
 	}
 	bc.Links = append([]link{{Href: "/", Body: "Discover Packages"}}, bc.Links...)
 	return bc
