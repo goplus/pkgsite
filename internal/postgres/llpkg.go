@@ -9,9 +9,9 @@ import (
 
 // GetLLPkgConfig retrieves the LLPkgConfig file for a given module path and version.
 func (db *DB) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
-	var err error = nil
+	var err error
 
-	var llpkgConfig *llpkgcfg.LLPkgConfig = nil
+	var llpkgConfig *llpkgcfg.LLPkgConfig
 	var content json.RawMessage
 	err = db.db.QueryRow(ctx, `
         SELECT llpkg_config
