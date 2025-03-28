@@ -118,7 +118,7 @@ type LLPkgInfoOnPage struct {
 	RawDetail       llpkgcfg.LLPkgConfig
 }
 
-// fetchLLPkgInfo fetches the LL-PkgConfig file content for a given module path and version from database.
+// fetchLLPkgInfo fetches the LLPkgConfig file content for a given module path and version from database.
 func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfoOnPage, error) {
 	info := LLPkgInfoOnPage{
 		HasLLPkgConfig: false,
