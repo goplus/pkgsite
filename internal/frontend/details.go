@@ -119,7 +119,6 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 	return nil
 }
 
-// TODO: wait for llpkgstore's cache manager to be ready
 // serveLLPkg fake the llpkg page with static content
 func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
 	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
@@ -151,7 +150,6 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 
 	// init metadata manager from env "LLPKG_METADATA_DIR"
 	mgr, err := metadata.NewMetadataMgr(os.Getenv("LLPKG_METADATA_DIR"))
-	fmt.Println("LLPKG_METADATA_DIR", os.Getenv("LLPKG_METADATA_DIR"))
 	if err != nil {
 		log.Warningf(ctx, "Failed to create metadata manager: %v", err)
 	} else {

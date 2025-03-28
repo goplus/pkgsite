@@ -4,7 +4,6 @@
 
 BEGIN;
 
--- Write your migration here.
 ALTER TABLE modules DROP COLUMN llpkg_config;
 
 END;

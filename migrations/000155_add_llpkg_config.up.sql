@@ -4,6 +4,6 @@
 
 BEGIN;
 
--- Write your migration here.
 ALTER TABLE modules ADD COLUMN IF NOT EXISTS llpkg_config JSONB;
+
 END;
