@@ -7,12 +7,16 @@ package frontend
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/google/safehtml/template"
+	"github.com/goplus/llpkgstore/metadata"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/llpkg"
+	"golang.org/x/pkgsite/internal/log"
 	"golang.org/x/pkgsite/internal/source"
 
 	"golang.org/x/pkgsite/internal/frontend/page"
@@ -143,27 +147,47 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 	breadcrumb := displayBreadcrumb(unit, "latest")
 
 	// init directories from llpkgstore.json
-	directories := []*Directory{
-		{
-			Prefix: "ajson",
-			Root: &DirectoryInfo{
-				Suffix:     "ajson",
-				URL:        "/github.com/NEKO-CwC/llpkgstore/ajson",
-				Synopsis:   "C:1.3 -> Go:v0.1.0",
-				IsModule:   true,
-				IsInternal: false,
-			},
-		},
-		{
-			Prefix: "bjson",
-			Root: &DirectoryInfo{
-				Suffix:     "bjson",
-				URL:        "/github.com/NEKO-CwC/llpkgstore/bjson",
-				Synopsis:   "C:1.2 -> Go:v0.1.0",
-				IsModule:   true,
-				IsInternal: false,
-			},
-		},
+	var directories []*Directory
+
+	// init metadata manager from env "LLPKG_METADATA_DIR"
+	mgr, err := metadata.NewMetadataMgr(os.Getenv("LLPKG_METADATA_DIR"))
+	fmt.Println("LLPKG_METADATA_DIR", os.Getenv("LLPKG_METADATA_DIR"))
+	if err != nil {
+		log.Warningf(ctx, "Failed to create metadata manager: %v", err)
+	} else {
+		metadataMap, err := mgr.AllMetadata()
+		if err != nil {
+			log.Warningf(ctx, "Failed to get metadata: %v", err)
+		} else {
+			for clibname := range metadataMap {
+				var synopsis string
+
+				latestCVer, err := mgr.LatestCVer(clibname)
+				if err != nil {
+					continue
+				}
+
+				latestGoVer, err := mgr.LatestGoVer(clibname)
+				if err != nil {
+					continue
+				}
+
+				synopsis = fmt.Sprintf("C:%s -> Go:%s", latestCVer, latestGoVer)
+
+				directory := &Directory{
+					Prefix: clibname,
+					Root: &DirectoryInfo{
+						Suffix:     clibname,
+						URL:        fmt.Sprintf("/github.com/goplus/llpkg/%s", clibname),
+						Synopsis:   synopsis,
+						IsModule:   true,
+						IsInternal: false,
+					},
+				}
+
+				directories = append(directories, directory)
+			}
+		}
 	}
 
 	// init main details
