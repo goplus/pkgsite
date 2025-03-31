@@ -11,16 +11,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	llpkgcfg "github.com/goplus/llpkgstore/config"
+
 	"golang.org/x/mod/semver"
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/fetch"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/log"
 	"golang.org/x/pkgsite/internal/lru"
 	"golang.org/x/pkgsite/internal/proxy"
@@ -395,6 +397,10 @@ func (ds *FetchDataSource) Search(ctx context.Context, q string, opts internal.S
 	return results, nil
 }
 
+// GetLLPkgConfig gets the LLPkgConfig file through module path match LLPkg rules.
 func (ds *FetchDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
-	return nil, nil
+	if llpkg.IsLLPkgModule(modulePath) {
+		return nil, nil
+	}
+	return nil, fmt.Errorf("%s@%s is not a LLPkg module", modulePath, version)
 }

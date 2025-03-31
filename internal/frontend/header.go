@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"path"
-	"strings"
 	"time"
 
 	"golang.org/x/mod/module"
@@ -72,7 +71,7 @@ func pageLabels(um *internal.UnitMeta) []string {
 	} else if um.IsPackage() {
 		pageTypes = append(pageTypes, pageTypePackage)
 	}
-	if um.LLPkgConfig != nil || strings.HasPrefix(um.ModulePath, llpkg.GitHubRepo) {
+	if um.LLPkgConfig != nil || llpkg.IsLLPkgModule(um.ModulePath) {
 		pageTypes = append(pageTypes, pageTypeLLPkg)
 	}
 	if um.IsModule() {
