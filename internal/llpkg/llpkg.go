@@ -1,10 +1,12 @@
 package llpkg
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	ModulePath = "llpkg"
-	GitHubRepo = "github.com/goplus/llpkg"
+	GitHubRepo = "github.com/NEKO-CwC/llpkgstore"
 )
 
 // IsOfficialLLPkgModule checks if the module path is a LLPkg module in the official repository.

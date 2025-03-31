@@ -22,7 +22,6 @@ import (
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/fetch"
-	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/log"
 	"golang.org/x/pkgsite/internal/lru"
 	"golang.org/x/pkgsite/internal/proxy"
@@ -400,8 +399,5 @@ func (ds *FetchDataSource) Search(ctx context.Context, q string, opts internal.S
 // GetLLPkgConfig is not supported at FetchDataSource is will always return an error.
 // It should be implemented in the postgres package.
 func (ds *FetchDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
-	if !llpkg.IsOfficialLLPkgModule(modulePath) {
-		return nil, fmt.Errorf("%s@%s is not a LLPkg module \n GetLLPkgConfig is not implemented in FetchDataSource", modulePath, version)
-	}
-	return nil, fmt.Errorf("GetLLPkgConfig is not implemented in FetchDataSource")
+	return nil, fmt.Errorf("GetLLPkgConfig is not implemented in fetchdatasource")
 }

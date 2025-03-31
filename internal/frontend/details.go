@@ -137,7 +137,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 			Version:           "v0.0.0",
 			HasGoMod:          true,
 			IsRedistributable: true,
-			SourceInfo:        source.NewInfo("https://github.com/goplus/llpkg", "src", "v0.0.0"),
+			SourceInfo:        source.NewInfo(fmt.Sprintf("https://%s", llpkg.GitHubRepo), "src", "v0.0.0"),
 			Deprecated:        false,
 			Retracted:         false,
 		},
@@ -173,7 +173,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 					Prefix: clibname,
 					Root: &DirectoryInfo{
 						Suffix:     clibname,
-						URL:        fmt.Sprintf("/github.com/goplus/llpkg/%s", clibname),
+						URL:        fmt.Sprintf("/%s/%s", llpkg.GitHubRepo, clibname),
 						Synopsis:   synopsis,
 						IsModule:   true,
 						IsInternal: false,

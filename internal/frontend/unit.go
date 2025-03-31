@@ -13,10 +13,9 @@ import (
 	"strings"
 	"time"
 
-	llpkgcfg "github.com/goplus/llpkgstore/config"
-
 	"github.com/google/safehtml"
 	"github.com/google/safehtml/uncheckedconversions"
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/cookie"
 	"golang.org/x/pkgsite/internal/derrors"
@@ -26,6 +25,7 @@ import (
 	"golang.org/x/pkgsite/internal/frontend/versions"
 	"golang.org/x/pkgsite/internal/log"
 	"golang.org/x/pkgsite/internal/middleware/stats"
+	"golang.org/x/pkgsite/internal/postgres"
 	"golang.org/x/pkgsite/internal/stdlib"
 	"golang.org/x/pkgsite/internal/version"
 	"golang.org/x/pkgsite/internal/vuln"
@@ -125,13 +125,10 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 	}
 
 	fileContent, err := ds.GetLLPkgConfig(ctx, um.ModulePath, um.Version)
-	if err != nil {
+	if errors.Is(err, &postgres.LLPkgConfigNotFoundError{}) {
 		log.Debugf(ctx, "Error fetching LLPkg fileContent: %v", err)
-		return info, nil
-	}
-
-	if fileContent == nil {
-		return info, nil
+	} else if err != nil {
+		return info, err
 	}
 
 	if fileContent.Upstream.Package.Name != "" {
