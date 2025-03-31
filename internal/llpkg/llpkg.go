@@ -7,7 +7,7 @@ const (
 	GitHubRepo = "github.com/goplus/llpkg"
 )
 
-// IsLLPkgModule checks if the module path is a LLPkg module.
-func IsLLPkgModule(modulePath string) bool {
+// IsOfficialLLPkgModule checks if the module path is a LLPkg module in the official repository.
+func IsOfficialLLPkgModule(modulePath string) bool {
 	return strings.HasPrefix(modulePath, GitHubRepo)
 }

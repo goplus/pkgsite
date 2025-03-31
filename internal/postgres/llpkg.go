@@ -13,7 +13,7 @@ import (
 func (db *DB) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
 	var err error
 
-	if llpkg.IsLLPkgModule(modulePath) {
+	if llpkg.IsOfficialLLPkgModule(modulePath) {
 		return nil, fmt.Errorf("%s@%s is not a LLPkg module", modulePath, version)
 	}
 
