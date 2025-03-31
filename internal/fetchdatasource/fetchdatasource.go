@@ -396,8 +396,7 @@ func (ds *FetchDataSource) Search(ctx context.Context, q string, opts internal.S
 	return results, nil
 }
 
-// GetLLPkgConfig is not supported at FetchDataSource is will always return an error.
-// It should be implemented in the postgres package.
+// TODO: It is temporarily not implemented.
 func (ds *FetchDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
 	return nil, fmt.Errorf("GetLLPkgConfig is not implemented in fetchdatasource")
 }
