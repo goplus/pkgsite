@@ -43,7 +43,6 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		s.serveHomepage(ctx, w, r)
 		return nil
 	}
-
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
 		url.Path = strings.TrimSuffix(r.URL.Path, "/")
@@ -147,9 +146,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 
 	// init directories from llpkgstore.json
 	var directories []*Directory
-
-	// init metadata manager from env "LLPKG_METADATA_DIR"
-	mgr, err := metadata.NewMetadataMgr(os.Getenv("LLPKG_METADATA_DIR"))
+	mgr, err := metadata.NewMetadataMgr(os.Getenv("LLPKG_METADATA_DIR")) // init metadata manager from env "LLPKG_METADATA_DIR"
 	if err != nil {
 		log.Warningf(ctx, "Failed to create metadata manager: %v", err)
 	} else {
