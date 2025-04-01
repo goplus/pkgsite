@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/version"
 )
 
@@ -97,6 +98,55 @@ func TestBreadcrumbPath(t *testing.T) {
 			got := breadcrumbPath(test.pkgPath, test.modPath, test.version)
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("mismatch (-want, +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestBreadcrumbWithLLPkg(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range []struct {
+		name           string
+		pkgPath        string
+		modPath        string
+		version        string
+		wantBreadcrumb breadcrumb
+	}{
+		{
+			name:    "llpkg module path",
+			pkgPath: "llpkg",
+			modPath: "llpkg",
+			version: "latest",
+			wantBreadcrumb: breadcrumb{
+				Current: "LLPkg library",
+			},
+		},
+		{
+			name:    "llpkg subpackage",
+			pkgPath: "github.com/NEKO-CwC/llpkgstore/cjson",
+			modPath: "github.com/NEKO-CwC/llpkgstore",
+			version: "v1.0.0",
+			wantBreadcrumb: breadcrumb{
+				Current: "cjson",
+				Links: []link{
+					{Href: "/", Body: "Discover Packages"},
+					{Href: "/llpkg", Body: "LLPkg library"},
+					{Href: "/github.com/NEKO-CwC/llpkgstore@v1.0.0", Body: "github.com/NEKO-CwC/llpkgstore"},
+				},
+				CopyData: "github.com/NEKO-CwC/llpkgstore/cjson",
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			um := &internal.UnitMeta{
+				Path:       test.pkgPath,
+				ModuleInfo: internal.ModuleInfo{ModulePath: test.modPath},
+			}
+			got := displayBreadcrumb(um, test.version)
+			if diff := cmp.Diff(test.wantBreadcrumb, got); diff != "" {
+				t.Errorf("displayBreadcrumb(%q, %q, %q) mismatch (-want +got):\n%s",
+					test.pkgPath, test.modPath, test.version, diff)
 			}
 		})
 	}

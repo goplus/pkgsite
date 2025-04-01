@@ -6,8 +6,9 @@ package internal
 
 import (
 	"context"
-	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"time"
+
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 )
 
 // SearchOptions provide information used by db.Search.

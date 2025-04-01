@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
 	"golang.org/x/pkgsite/internal"
@@ -488,4 +489,8 @@ func (ds *FakeDataSource) InsertModule(ctx context.Context, m *internal.Module, 
 
 func (ds *FakeDataSource) UpsertVersionMap(ctx context.Context, vm *internal.VersionMap) error {
 	return errNotImplemented
+}
+
+func (ds *FakeDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
+	return nil, fmt.Errorf("GetLLPkgConfig is not implemented in fakedatasource")
 }
