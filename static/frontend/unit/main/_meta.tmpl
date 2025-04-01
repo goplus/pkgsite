@@ -30,7 +30,7 @@
           <li>
             <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
               <summary class="go-textSubtle">
-                {{template "unit-meta-details-check" eq .LLPkg.RawDetail.Upstream.Installer.Name "conan"}}
+                {{template "unit-meta-details-check" true}}
                 Upstream: 
                 {{if eq .LLPkg.RawDetail.Upstream.Installer.Name "conan"}}
                 <img class="go-Icon" src="/static/shared/icon/conan.png" alt="" height="24" width="24">
@@ -51,7 +51,7 @@
           <li>
             <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
               <summary class="go-textSubtle">
-                {{template "unit-meta-details-check"}}
+                {{template "unit-meta-details-check" true}}
                 <span class="go-textSubtle">C version: </span>
                 {{.LLPkg.RawDetail.Upstream.Package.Version}}
               </summary>
