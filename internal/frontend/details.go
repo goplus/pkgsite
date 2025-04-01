@@ -118,6 +118,7 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 	return nil
 }
 
+// TODO: move this
 // serveLLPkg fake the llpkg page with static content
 func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
 	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
