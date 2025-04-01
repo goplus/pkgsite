@@ -41,6 +41,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		s.serveHomepage(ctx, w, r)
 		return nil
 	}
+	if strings.HasPrefix(r.URL.Path, "/llpkg/") {
+		http.Redirect(w, r, fmt.Sprintf("/%s/%s", llpkg.GitHubRepo, strings.TrimPrefix(r.URL.Path, "/llpkg/")), http.StatusMovedPermanently)
+		return
+	}
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
 		url.Path = strings.TrimSuffix(r.URL.Path, "/")
