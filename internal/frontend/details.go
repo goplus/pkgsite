@@ -116,7 +116,6 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 	return nil
 }
 
-// TODO: move this
 // serveLLPkg fake the llpkg page with static content
 func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
 	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
@@ -150,26 +149,26 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 			log.Warningf(ctx, "Failed to get metadata: %v", err)
 		} else {
 			for clibname := range metadataMap {
-				var synopsis string
+				// var synopsis string
 
-				latestCVer, err := mgr.LatestCVer(clibname)
-				if err != nil {
-					continue
-				}
+				// latestCVer, err := mgr.LatestCVer(clibname)
+				// if err != nil {
+				// 	continue
+				// }
 
-				latestGoVer, err := mgr.LatestGoVer(clibname)
-				if err != nil {
-					continue
-				}
+				// latestGoVer, err := mgr.LatestGoVer(clibname)
+				// if err != nil {
+				// 	continue
+				// }
 
-				synopsis = fmt.Sprintf("C:%s -> Go:%s", latestCVer, latestGoVer)
+				// synopsis = fmt.Sprintf("C:%s -> Go:%s", latestCVer, latestGoVer)
 
 				directory := &Directory{
 					Prefix: clibname,
 					Root: &DirectoryInfo{
 						Suffix:     clibname,
 						URL:        fmt.Sprintf("/%s/%s", llpkg.GitHubRepo, clibname),
-						Synopsis:   synopsis,
+						Synopsis:   "",
 						IsModule:   true,
 						IsInternal: false,
 					},
@@ -181,7 +180,9 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 	}
 
 	// init main details
-	mainDetails := &MainDetails{}
+	mainDetails := &MainDetails{
+		Directories: directories,
+	}
 
 	// build the full page
 	page := UnitPage{
