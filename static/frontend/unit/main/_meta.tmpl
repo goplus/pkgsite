@@ -51,7 +51,8 @@
           <li>
             <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
               <summary class="go-textSubtle">
-                <span class="go-textSubtle">CVersion: </span>
+                {{template "unit-meta-details-check"}}
+                <span class="go-textSubtle">C version: </span>
                 {{.LLPkg.RawDetail.Upstream.Package.Version}}
               </summary>
             </details> 

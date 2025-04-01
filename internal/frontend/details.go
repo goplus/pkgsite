@@ -12,12 +12,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/safehtml/template"
 	"github.com/goplus/llpkgstore/metadata"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/log"
-	"golang.org/x/pkgsite/internal/source"
 
 	"golang.org/x/pkgsite/internal/frontend/page"
 	"golang.org/x/pkgsite/internal/frontend/serrors"
@@ -131,23 +129,19 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 
 	// init a unit meta
 	unit := &internal.UnitMeta{
-		Path: "llpkg",
-		Name: "",
-		ModuleInfo: internal.ModuleInfo{
-			ModulePath:        llpkg.GitHubRepo,
-			Version:           "v0.0.0",
-			HasGoMod:          true,
-			IsRedistributable: true,
-			SourceInfo:        source.NewInfo(fmt.Sprintf("https://%s", llpkg.GitHubRepo), "src", "v0.0.0"),
-			Deprecated:        false,
-			Retracted:         false,
-		},
+		Path:       "llpkg",
+		Name:       "",
+		ModuleInfo: internal.ModuleInfo{},
 	}
 	breadcrumb := displayBreadcrumb(unit, "latest")
 
 	// init directories from llpkgstore.json
 	var directories []*Directory
-	mgr, err := metadata.NewMetadataMgr(os.Getenv("LLPKG_METADATA_DIR")) // init metadata manager from env "LLPKG_METADATA_DIR"
+	LLPKG_METADATA_DIR := os.Getenv("LLPKG_METADATA_DIR")
+	if LLPKG_METADATA_DIR == "" {
+		LLPKG_METADATA_DIR = "."
+	}
+	mgr, err := metadata.NewMetadataMgr(LLPKG_METADATA_DIR) // init metadata manager from env "LLPKG_METADATA_DIR"
 	if err != nil {
 		log.Warningf(ctx, "Failed to create metadata manager: %v", err)
 	} else {
@@ -187,19 +181,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 	}
 
 	// init main details
-	emptyHTML := template.MustParseAndExecuteToHTML("")
-	mainDetails := &MainDetails{
-		Directories:     directories,
-		Readme:          emptyHTML,
-		DocBody:         emptyHTML,
-		Licenses:        []LicenseMetadata{},
-		RepositoryURL:   llpkg.GitHubRepo,
-		SourceURL:       llpkg.GitHubRepo,
-		ModFileURL:      llpkg.GitHubRepo,
-		IsPackage:       false,
-		IsTaggedVersion: false,
-		IsStableVersion: true,
-	}
+	mainDetails := &MainDetails{}
 
 	// build the full page
 	page := UnitPage{
@@ -211,7 +193,7 @@ func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.
 		CanonicalURLPath: "/llpkg",
 		PageType:         "llpkg",
 		PageLabels:       []string{"LLPkg"},
-		CanShowDetails:   true,
+		CanShowDetails:   false,
 		SelectedTab:      unitTabLookup[tabMain],
 		Details:          mainDetails,
 	}
