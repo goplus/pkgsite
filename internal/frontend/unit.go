@@ -142,7 +142,7 @@ func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.Un
 		info.UpstreamLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
 	} else {
 		info.UpstreamLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
-		fileContent.Upstream.Installer.Name = "conan"
+		info.RawDetail.Upstream.Installer.Name = "conan"
 	}
 
 	return info, nil
