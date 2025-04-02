@@ -599,8 +599,8 @@ github.com/googleapis/gax-go/v2 v2.11.0 h1:9V9PWXEsWnPpQhu/PeQIkS4eGzMlTLGgt80cU
 github.com/googleapis/gax-go/v2 v2.11.0/go.mod h1:DxmR61SGKkGLa2xigwuZIQpkCI2S5iydzRfb3peWZJI=
 github.com/googleapis/gnostic v0.4.1/go.mod h1:LRhVm6pbyptWbWbuZ38d1eyptfvIytN3ir6b65WBswg=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
-github.com/goplus/llpkgstore v0.0.0-20250401085712-abeaa75c8692 h1:mKNc98/wg7TZ+e8lIT8Ep8Yq3g5dhUMpmPTx+IWREuk=
-github.com/goplus/llpkgstore v0.0.0-20250401085712-abeaa75c8692/go.mod h1:PTuS2Gf1P6F7arDg1BCLqneozjGPUsyj/A0j9Vujs4U=
+github.com/goplus/llpkgstore v0.0.0-20250402081246-efa88b308fba h1:L4XX9iSi4/GIF1VnJz8fHr+pDh6gAdusPU48ypX/xWs=
+github.com/goplus/llpkgstore v0.0.0-20250402081246-efa88b308fba/go.mod h1:PTuS2Gf1P6F7arDg1BCLqneozjGPUsyj/A0j9Vujs4U=
 github.com/gorilla/handlers v0.0.0-20150720190736-60c7bfde3e33/go.mod h1:Qkdc/uu4tH4g6mTK6auzZ766c4CA0Ng8+o/OAirnOIQ=
 github.com/gorilla/handlers v1.4.2/go.mod h1:Qkdc/uu4tH4g6mTK6auzZ766c4CA0Ng8+o/OAirnOIQ=
 github.com/gorilla/mux v1.7.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
