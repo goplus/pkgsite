@@ -36,7 +36,7 @@
                 <img class="go-Icon" src="/static/shared/icon/conan.png" alt="" height="24" width="24">
                 <a href="{{.LLPkg.UpstreamLink}}" title="View on Conan" target="_blank" rel="noopener">
                   Conan
-                </a>    
+                </a>
                 <img class="go-Icon" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" height="24" width="24">
               </summary>
               <p>
@@ -53,7 +53,9 @@
               <summary class="go-textSubtle">
                 {{template "unit-meta-details-check" true}}
                 <span class="go-textSubtle">C version: </span>
-                {{.LLPkg.RawDetail.Upstream.Package.Version}}
+                <a href="{{.LLPkg.UpstreamLink}}" title="View on Conan" target="_blank" rel="noopener">
+                  {{.LLPkg.RawDetail.Upstream.Package.Version}}
+                </a>
               </summary>
             </details> 
           </li>
