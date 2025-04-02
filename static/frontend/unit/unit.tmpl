@@ -16,7 +16,7 @@
 {{end}}
 
 {{define "main"}}
-  <main class="{{if eq .PageType "llpkg"}}go-Main--without-aside{{else}}go-Main{{end}}" id="main-content">
+  <main class="{{if eq .PageType "llpkg"}}go-Main--without-aside{{end}} go-Main" id="main-content">
     <div class="go-Main-banner" role="alert">
       {{- block "main-banner" .}}{{end -}}
     </div>
