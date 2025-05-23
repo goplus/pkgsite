@@ -16,6 +16,8 @@ import (
 	"strings"
 	"time"
 
+	llpkgcfg "github.com/goplus/llpkgstore/config"
+
 	"golang.org/x/mod/semver"
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/derrors"
@@ -392,4 +394,9 @@ func (ds *FetchDataSource) Search(ctx context.Context, q string, opts internal.S
 	}
 
 	return results, nil
+}
+
+// TODO: It is temporarily not implemented.
+func (ds *FetchDataSource) GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error) {
+	return nil, fmt.Errorf("GetLLPkgConfig is not implemented in fetchdatasource")
 }

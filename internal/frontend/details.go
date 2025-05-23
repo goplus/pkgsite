@@ -7,8 +7,15 @@ package frontend
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
+
+	"github.com/goplus/llpkgstore/metadata"
+	"golang.org/x/pkgsite/internal/derrors"
+	"golang.org/x/pkgsite/internal/llpkg"
+	"golang.org/x/pkgsite/internal/log"
 
 	"golang.org/x/pkgsite/internal/frontend/page"
 	"golang.org/x/pkgsite/internal/frontend/serrors"
@@ -33,6 +40,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 	if r.URL.Path == "/" {
 		s.serveHomepage(ctx, w, r)
 		return nil
+	}
+	if strings.HasPrefix(r.URL.Path, "/llpkg/") {
+		http.Redirect(w, r, fmt.Sprintf("/%s/%s", llpkg.GitHubRepo, strings.TrimPrefix(r.URL.Path, "/llpkg/")), http.StatusMovedPermanently)
+		return
 	}
 	if strings.HasSuffix(r.URL.Path, "/") {
 		url := *r.URL
@@ -66,6 +77,10 @@ func (s *Server) serveDetails(w http.ResponseWriter, r *http.Request, ds interna
 		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
 		return
 	}
+	if urlPath := llpkgRedirectURL(urlInfo.FullPath); urlPath != "" {
+		http.Redirect(w, r, urlPath, http.StatusMovedPermanently)
+		return
+	}
 	if err := checkExcluded(ctx, ds, urlInfo.FullPath, urlInfo.RequestedVersion); err != nil {
 		return err
 	}
@@ -86,6 +101,13 @@ func stdlibRedirectURL(fullPath string) string {
 	return "/" + urlPath2
 }
 
+func llpkgRedirectURL(fullPath string) string {
+	if fullPath == llpkg.GitHubRepo {
+		return "/llpkg"
+	}
+	return ""
+}
+
 func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, version string) error {
 	db, ok := ds.(internal.PostgresDB)
 	if !ok {
@@ -95,5 +117,93 @@ func checkExcluded(ctx context.Context, ds internal.DataSource, fullPath, versio
 		// Return NotFound; don't let the user know that the package was excluded.
 		return &serrors.ServerError{Status: http.StatusNotFound}
 	}
+	return nil
+}
+
+// serveLLPkg fake the llpkg page with static content
+func (s *Server) serveLLPkg(w http.ResponseWriter, r *http.Request, ds internal.DataSource) (err error) {
+	defer derrors.Wrap(&err, "serveLLPkg(ctx, w, r)")
+	ctx := r.Context()
+
+	// init a base page
+	basePage := s.newBasePage(r, "LLPkg")
+	basePage.AllowWideContent = true
+	basePage.UseResponsiveLayout = true
+
+	// init a unit meta
+	unit := &internal.UnitMeta{
+		Path:       "llpkg",
+		Name:       "",
+		ModuleInfo: internal.ModuleInfo{},
+	}
+	breadcrumb := displayBreadcrumb(unit, "latest")
+
+	// init directories from llpkgstore.json
+	var directories []*Directory
+	LLPKG_METADATA_DIR := os.Getenv("LLPKG_METADATA_DIR")
+	if LLPKG_METADATA_DIR == "" {
+		LLPKG_METADATA_DIR = "."
+	}
+	mgr, err := metadata.NewMetadataMgr(LLPKG_METADATA_DIR) // init metadata manager from env "LLPKG_METADATA_DIR"
+	if err != nil {
+		log.Warningf(ctx, "Failed to create metadata manager: %v", err)
+	} else {
+		metadataMap, err := mgr.AllMetadata()
+		if err != nil {
+			log.Warningf(ctx, "Failed to get metadata: %v", err)
+		} else {
+			for clibname := range metadataMap {
+				// var synopsis string
+
+				// latestCVer, err := mgr.LatestCVer(clibname)
+				// if err != nil {
+				// 	continue
+				// }
+
+				// latestGoVer, err := mgr.LatestGoVer(clibname)
+				// if err != nil {
+				// 	continue
+				// }
+
+				// synopsis = fmt.Sprintf("C:%s -> Go:%s", latestCVer, latestGoVer)
+
+				directory := &Directory{
+					Prefix: clibname,
+					Root: &DirectoryInfo{
+						Suffix:     clibname,
+						URL:        fmt.Sprintf("/%s/%s", llpkg.GitHubRepo, clibname),
+						Synopsis:   "",
+						IsModule:   true,
+						IsInternal: false,
+					},
+				}
+
+				directories = append(directories, directory)
+			}
+		}
+	}
+
+	// init main details
+	mainDetails := &MainDetails{
+		Directories: directories,
+	}
+
+	// build the full page
+	page := UnitPage{
+		BasePage:         basePage,
+		Unit:             unit,
+		Breadcrumb:       breadcrumb,
+		Title:            "LLPkg",
+		URLPath:          "/llpkg",
+		CanonicalURLPath: "/llpkg",
+		PageType:         "llpkg",
+		PageLabels:       []string{"LLPkg"},
+		CanShowDetails:   false,
+		SelectedTab:      unitTabLookup[tabMain],
+		Details:          mainDetails,
+	}
+
+	// render the full page
+	s.servePage(ctx, w, "unit/main", page)
 	return nil
 }

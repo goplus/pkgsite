@@ -16,16 +16,18 @@
 {{end}}
 
 {{define "main"}}
-  <main class="go-Main" id="main-content">
+  <main class="{{if eq .PageType "llpkg"}}go-Main--without-aside{{end}} go-Main" id="main-content">
     <div class="go-Main-banner" role="alert">
       {{- block "main-banner" .}}{{end -}}
     </div>
     <header class="go-Main-header js-mainHeader">
       {{- block "main-header" .}}{{end -}}
     </header>
+    {{ if ne .PageType "llpkg" }}
     <aside class="go-Main-aside {{if not (eq .SelectedTab.Name "")}}go-Main-aside--empty{{end}} js-mainAside">
-      {{- block "main-aside" .}}{{end -}}
+          {{- block "main-aside" .}}{{end -}}
     </aside>
+    {{ end }}
     <nav class="go-Main-nav go-Main-nav--sticky js-mainNav" aria-label="Outline">
       {{- block "main-nav" .}}{{end -}}
     </nav>

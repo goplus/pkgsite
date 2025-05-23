@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/safehtml"
 	"github.com/google/safehtml/uncheckedconversions"
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/cookie"
 	"golang.org/x/pkgsite/internal/derrors"
@@ -24,6 +25,7 @@ import (
 	"golang.org/x/pkgsite/internal/frontend/versions"
 	"golang.org/x/pkgsite/internal/log"
 	"golang.org/x/pkgsite/internal/middleware/stats"
+	"golang.org/x/pkgsite/internal/postgres"
 	"golang.org/x/pkgsite/internal/stdlib"
 	"golang.org/x/pkgsite/internal/version"
 	"golang.org/x/pkgsite/internal/vuln"
@@ -105,6 +107,45 @@ type UnitPage struct {
 	// IsGoProject is true if the package is from the standard library or a
 	// golang.org sub-repository.
 	IsGoProject bool
+
+	LLPkg LLPkgInfoOnPage
+}
+
+type LLPkgInfoOnPage struct {
+	HasLLPkgConfig  bool
+	LLPkgCfgFileURL string
+	UpstreamLink    string
+	RawDetail       llpkgcfg.LLPkgConfig
+}
+
+// fetchLLPkgInfo fetches the LLPkgConfig file content for a given module path and version from database.
+func fetchLLPkgInfo(ctx context.Context, ds internal.DataSource, um *internal.UnitMeta) (LLPkgInfoOnPage, error) {
+	info := LLPkgInfoOnPage{
+		HasLLPkgConfig: false,
+	}
+
+	fileContent, err := ds.GetLLPkgConfig(ctx, um.ModulePath, um.Version)
+	if errors.Is(err, &postgres.LLPkgConfigNotFoundError{}) {
+		log.Debugf(ctx, "Error fetching LLPkg fileContent: %v", err)
+	} else if err != nil {
+		return info, err
+	}
+
+	if fileContent.Upstream.Package.Name != "" {
+		info.HasLLPkgConfig = true
+		info.RawDetail = *fileContent
+		info.LLPkgCfgFileURL = um.SourceInfo.ModuleURL() + "/llpkg.cfg"
+	}
+
+	// TODO: other upstreams change here
+	if fileContent.Upstream.Installer.Name == "conan" {
+		info.UpstreamLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
+	} else {
+		info.UpstreamLink = fmt.Sprintf("https://conan.io/center/%s", fileContent.Upstream.Package.Name)
+		info.RawDetail.Upstream.Installer.Name = "conan"
+	}
+
+	return info, nil
 }
 
 // serveUnitPage serves a unit page for a path.
@@ -209,6 +250,13 @@ func (s *Server) serveUnitPage(ctx context.Context, w http.ResponseWriter, r *ht
 		basePage.UseResponsiveLayout = true
 	}
 	lv := versions.LinkVersion(um.ModulePath, info.RequestedVersion, um.Version)
+
+	// fetch llpkg info
+	llpkgInfo, err := fetchLLPkgInfo(ctx, ds, um)
+	if err != nil {
+		log.Warningf(ctx, "Error fetching LLPkg info: %v", err)
+	}
+
 	page := UnitPage{
 		BasePage:              basePage,
 		Unit:                  um,
@@ -228,6 +276,7 @@ func (s *Server) serveUnitPage(ctx context.Context, w http.ResponseWriter, r *ht
 		DepsDevURL:            makeDepsDevURL(),
 		IsGoProject:           isGoProject(um.ModulePath),
 		IsLatestMinor:         lv == latestInfo.MinorVersion,
+		LLPkg:                 llpkgInfo,
 	}
 
 	// Show the banner if there was no error getting the latest major version,

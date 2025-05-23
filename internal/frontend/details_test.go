@@ -28,3 +28,41 @@ func TestStdlibRedirectURL(t *testing.T) {
 		}
 	}
 }
+
+func TestLLPkgRedirectURL(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range []struct {
+		fullPath string
+		want     string
+	}{
+		{
+			fullPath: "github.com/NEKO-CwC/llpkgstore",
+			want:     "/llpkg",
+		},
+		{
+			fullPath: "github.com/NEKO-CwC/llpkgstore/cjson",
+			want:     "",
+		},
+		{
+			fullPath: "github.com/golang/go",
+			want:     "",
+		},
+		{
+			fullPath: "llpkg",
+			want:     "",
+		},
+		{
+			fullPath: "",
+			want:     "",
+		},
+	} {
+		t.Run(test.fullPath, func(t *testing.T) {
+			got := llpkgRedirectURL(test.fullPath)
+			if got != test.want {
+				t.Errorf("llpkgRedirectURL(%q) = %q, want %q",
+					test.fullPath, got, test.want)
+			}
+		})
+	}
+}

@@ -59,3 +59,22 @@
     width: initial;
   }
 }
+
+.UnitMeta-llpkg {
+  margin-bottom: 1rem;
+}
+
+.UnitMeta-llpkgDetails {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.UnitMeta-llpkgDetails li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.UnitMeta-llpkgDetails a:hover {
+  text-decoration: underline;
+}

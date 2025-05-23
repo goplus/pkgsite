@@ -8,6 +8,61 @@
   <div class="UnitMeta">
     <h2 class="go-textLabel">Details</h2>
     {{template "unit-meta-details" .}}
+
+    <!-- LLPkg Info Section (conditionally rendered) -->
+    {{if .LLPkg.HasLLPkgConfig}}
+      <h2 class="go-textLabel">LLPkg Details</h2>
+        <ul class="UnitMeta-details">
+
+          <li>
+            <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+              <summary class="go-textSubtle">
+                {{template "unit-meta-details-check" .LLPkg.HasLLPkgConfig}}
+                Valid {{if .LLPkg.HasLLPkgConfig}}<a href="{{.LLPkg.LLPkgCfgFileURL}}" target="_blank" rel="noopener">{{end}}llpkg.cfg{{if .LLPkg.HasLLPkgConfig}}</a>{{end}} file
+                <img class="go-Icon" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" height="24" width="24">
+              </summary>
+              <p>
+                The LLPkg configuration file is a JSON file that contains metadata about the package.
+              </p>
+            </details>
+          </li>
+
+          <li>
+            <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+              <summary class="go-textSubtle">
+                {{template "unit-meta-details-check" true}}
+                Upstream: 
+                {{if eq .LLPkg.RawDetail.Upstream.Installer.Name "conan"}}
+                <img class="go-Icon" src="/static/shared/icon/conan.png" alt="" height="24" width="24">
+                <a href="{{.LLPkg.UpstreamLink}}" title="View on Conan" target="_blank" rel="noopener">
+                  Conan
+                </a>
+                <img class="go-Icon" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" height="24" width="24">
+              </summary>
+              <p>
+                The Conan package is a C/C++ package manager that allows you to manage dependencies for your C/C++ projects.
+              </p>
+              {{else}}
+              <p>Unknown Upstream</p>
+              {{end}}
+            </details>
+          </li>
+
+          <li>
+            <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+              <summary class="go-textSubtle">
+                {{template "unit-meta-details-check" true}}
+                <span class="go-textSubtle">C version: </span>
+                <a href="{{.LLPkg.UpstreamLink}}" title="View on Conan" target="_blank" rel="noopener">
+                  {{.LLPkg.RawDetail.Upstream.Package.Version}}
+                </a>
+              </summary>
+            </details> 
+          </li>
+
+        </ul>
+    {{end}}
+
     <h2 class="go-textLabel">Repository</h2>
     <div class="UnitMeta-repo">
       {{if .Details.RepositoryURL}}

@@ -7,6 +7,8 @@ package internal
 import (
 	"context"
 	"time"
+
+	llpkgcfg "github.com/goplus/llpkgstore/config"
 )
 
 // SearchOptions provide information used by db.Search.
@@ -96,6 +98,9 @@ type DataSource interface {
 	SearchSupport() SearchSupport
 	// Search searches for packages matching the given query.
 	Search(ctx context.Context, q string, opts SearchOptions) (_ []*SearchResult, err error)
+
+	// GetLLPkgConfig gets the LLPkgConfig file through module version.
+	GetLLPkgConfig(ctx context.Context, modulePath, version string) (*llpkgcfg.LLPkgConfig, error)
 }
 
 type SearchSupport int

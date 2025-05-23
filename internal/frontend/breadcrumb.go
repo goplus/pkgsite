@@ -6,9 +6,11 @@ package frontend
 
 import (
 	"path"
+	"strings"
 
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/frontend/versions"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/stdlib"
 	"golang.org/x/pkgsite/internal/version"
 )
@@ -19,6 +21,9 @@ func displayBreadcrumb(um *internal.UnitMeta, requestedVersion string) breadcrum
 	bc := breadcrumbPath(um.Path, um.ModulePath, requestedVersion)
 	if um.ModulePath == stdlib.ModulePath && um.Path != stdlib.ModulePath {
 		bc.Links = append([]link{{Href: "/std", Body: "Standard library"}}, bc.Links...)
+	} else if strings.Contains(um.ModulePath, llpkg.GitHubRepo) && um.Path != llpkg.ModulePath {
+		bc.Links = append([]link{{Href: "/llpkg", Body: "LLPkg library"}}, bc.Links...)
+		bc.Current = strings.TrimPrefix(um.Path, llpkg.GitHubRepo+"/")
 	}
 	bc.Links = append([]link{{Href: "/", Body: "Discover Packages"}}, bc.Links...)
 	return bc
@@ -45,6 +50,8 @@ type link struct {
 func breadcrumbPath(pkgPath, modPath, requestedVersion string) breadcrumb {
 	if pkgPath == stdlib.ModulePath {
 		return breadcrumb{Current: "Standard library"}
+	} else if pkgPath == llpkg.ModulePath {
+		return breadcrumb{Current: "LLPkg library"}
 	}
 	// Obtain successive prefixes of pkgPath, stopping at modPath,
 	// or for the stdlib, at the end.

@@ -313,6 +313,30 @@
   }
 }
 
+@media screen and (min-width: 112rem) {
+  :root[data-layout='responsive'] .go-Main--without-aside {
+    display: grid;
+    grid-template: repeat(4, min-content) / minmax(17.5%, 1fr) minmax(0, 4fr) minmax(17.5%, 1fr);
+    grid-template-areas:
+      'banner banner  banner'
+      'header header  header'
+      'nav    article article'
+      'footer footer  footer';
+  }
+
+  :root[data-layout='responsive'] .go-Main-article {
+    margin: var(--gap) var(--gap) 5rem;
+    padding: 0;
+  }
+
+  :root[data-layout='responsive'] .go-Main-aside {
+    background-color: var(--color-background);
+    border-bottom: none;
+    margin: var(--gap) 0 0 0;
+    padding: 0 var(--gutter) 0 0;
+  }
+}
+
 @media screen and (min-width: 80rem) {
   :root[data-layout='compact'] .go-Main {
     grid-template: repeat(6, min-content) / 1fr auto;

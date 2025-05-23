@@ -1,6 +1,6 @@
 module golang.org/x/pkgsite
 
-go 1.19
+go 1.23.0
 
 require (
 	cloud.google.com/go/cloudtasks v1.10.0
@@ -22,13 +22,14 @@ require (
 	github.com/google/go-replayers/httpreplay v1.0.0
 	github.com/google/licensecheck v0.3.1
 	github.com/google/safehtml v0.0.3-0.20211026203422-d6f0e11a5516
+	github.com/goplus/llpkgstore v0.0.0-20250402081246-efa88b308fba
 	github.com/jackc/pgconn v1.10.1
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jba/templatecheck v0.6.0
 	github.com/lib/pq v1.10.9
 	github.com/russross/blackfriday/v2 v2.1.0
 	go.opencensus.io v0.24.0
-	golang.org/x/mod v0.16.0
+	golang.org/x/mod v0.23.0
 	golang.org/x/net v0.22.0
 	golang.org/x/sync v0.6.0
 	golang.org/x/text v0.14.0

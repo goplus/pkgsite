@@ -24,11 +24,13 @@ var allowedModDeps = map[string]bool{
 	"golang.org/x/text":              true,
 	"golang.org/x/tools":             true,
 	"rsc.io/markdown":                true,
+	"github.com/goplus/llpkgstore":   true,
 }
 
 // test packages are also allowed to depend on go-cmp
 var additionalAllowedTestModDeps = map[string]bool{
-	"github.com/google/go-cmp": true,
+	"github.com/google/go-cmp":     true,
+	"github.com/goplus/llpkgstore": true,
 }
 
 func TestCmdPkgsiteDeps(t *testing.T) {

@@ -5,6 +5,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"errors"
 	"path"
 	"strconv"
@@ -60,6 +61,8 @@ type ModuleInfo struct {
 	Retracted bool
 	// RetractionRationale is the reason for the retraction, if any.
 	RetractionRationale string
+
+	LLPkgConfig json.RawMessage
 }
 
 // VersionMap holds metadata associated with module queries for a version.

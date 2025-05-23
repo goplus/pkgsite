@@ -10,6 +10,7 @@ import (
 
 	"golang.org/x/mod/module"
 	"golang.org/x/pkgsite/internal"
+	"golang.org/x/pkgsite/internal/llpkg"
 	"golang.org/x/pkgsite/internal/stdlib"
 )
 
@@ -20,6 +21,7 @@ const (
 	pageTypeCommand   = "command"
 	pageTypeModuleStd = "std"
 	pageTypeStdlib    = "standard library"
+	pageTypeLLPkg     = "LLPkg library"
 )
 
 // pageTitle determines the pageTitles for a given unit.
@@ -68,6 +70,9 @@ func pageLabels(um *internal.UnitMeta) []string {
 		pageTypes = append(pageTypes, pageTypeCommand)
 	} else if um.IsPackage() {
 		pageTypes = append(pageTypes, pageTypePackage)
+	}
+	if um.LLPkgConfig != nil || llpkg.IsOfficialLLPkgModule(um.ModulePath) {
+		pageTypes = append(pageTypes, pageTypeLLPkg)
 	}
 	if um.IsModule() {
 		pageTypes = append(pageTypes, pageTypeModule)
