@@ -88,12 +88,14 @@ Doc: AddInt doc
 func (p T) AddInt(b int) *T
 - Method Gop_Add -
 Recv: T
-Doc: AddInt doc
+Doc: overload_func_index:0
+AddInt doc
 
 func (p T) Gop_Add(b int) *T
 - Method Gop_Add -
 Recv: *T
-Doc: AddString doc
+Doc: overload_func_index:1
+AddString doc
 
 func (this *T) Gop_Add(b string) *T
 `)
@@ -116,15 +118,18 @@ func AddInt(a, b int) int {}
 // AddString doc
 func AddString(a, b string) string {}
 `, `== Func Add ==
-Doc: AddInt doc
+Doc: overload_func_index:0
+AddInt doc
 
 func Add(a, b int) int
 == Func Add ==
-Doc: Add doc
+Doc: overload_func_index:1
+Add doc
 
 func Add(a, b float64) float64
 == Func Add ==
-Doc: AddString doc
+Doc: overload_func_index:2
+AddString doc
 
 func Add(a, b string) string
 == Func AddInt ==
@@ -148,7 +153,8 @@ const GopPackage = true
 func Bar__0() {
 }
 `, `== Func Bar ==
-Doc: Bar doc
+Doc: overload_func_index:0
+Bar doc
 
 func Bar()
 `)
@@ -172,12 +178,14 @@ func (t T) Bar__1() {
 `, `== Type T ==
 - Method Bar -
 Recv: *T
-Doc: Bar doc 1
+Doc: overload_func_index:0
+Bar doc 1
 
 func (p *T) Bar()
 - Method Bar -
 Recv: T
-Doc: Bar doc 2
+Doc: overload_func_index:1
+Bar doc 2
 
 func (t T) Bar()
 `)

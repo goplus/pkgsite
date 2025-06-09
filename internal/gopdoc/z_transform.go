@@ -149,12 +149,21 @@ func setOrder(ctx *transformCtx, in *doc.Func, order int) *doc.Func {
 	return in
 }
 
+func setOverloadIndex(in *doc.Func, idx int) *doc.Func {
+	in.Doc = "overload_func_index:" + strconv.Itoa(idx) + "\n" + in.Doc
+	return in
+}
+
 func buildFunc(ctx *transformCtx, overload omthd, in *doc.Func) {
 	if ex, ok := ctx.typs[overload.typ]; ok {
 		if ex.t != nil { // method
-			ex.methods = append(ex.methods, setOrder(ctx, newMethod(overload.name, in), overload.idx))
+			overloadMethod := newMethod(overload.name, in)
+			setOverloadIndex(overloadMethod, overload.idx)
+			ex.methods = append(ex.methods, setOrder(ctx, overloadMethod, overload.idx))
 		} else {
-			ex.funcs = append(ex.funcs, setOrder(ctx, newFunc(overload.name, in), overload.idx))
+			overloadFunc := newFunc(overload.name, in)
+			setOverloadIndex(overloadFunc, overload.idx)
+			ex.funcs = append(ex.funcs, setOrder(ctx, overloadFunc, overload.idx))
 		}
 	}
 }
@@ -180,11 +189,13 @@ func transformFunc(ctx *transformCtx, t *doc.Type, in *doc.Func, method bool) {
 			buildFunc(ctx, overload, in)
 		}
 	}
+
 	if isOverload(in.Name) {
 		order := toIndex(in.Name[len(in.Name)-1])
 		in.Name = in.Name[:len(in.Name)-3]
 		in.Decl.Name.Name = in.Name
 		ctx.orders[in] = order
+		setOverloadIndex(in, order)
 	}
 }
 
