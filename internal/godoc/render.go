@@ -16,14 +16,13 @@ import (
 	"strings"
 
 	"github.com/google/safehtml/template"
+	xgodoc "github.com/goplus/xgo/doc"
 	"golang.org/x/mod/semver"
 	"golang.org/x/pkgsite/internal"
 	"golang.org/x/pkgsite/internal/derrors"
 	"golang.org/x/pkgsite/internal/godoc/dochtml"
 	"golang.org/x/pkgsite/internal/source"
 	"golang.org/x/pkgsite/internal/stdlib"
-
-	"golang.org/x/pkgsite/internal/gopdoc"
 )
 
 const (
@@ -141,7 +140,7 @@ func (p *Package) DocPackage(innerPath string, modInfo *ModuleInfo) (_ *doc.Pack
 	if len(d.Imports) > maxImportsPerPackage {
 		return nil, fmt.Errorf("%d imports found package %q; exceeds limit %d for maxImportsPerPackage", len(d.Imports), importPath, maxImportsPerPackage)
 	}
-	return gopdoc.Transform(d), nil
+	return xgodoc.Transform(d), nil
 }
 
 // renderOptions returns a RenderOptions for p.

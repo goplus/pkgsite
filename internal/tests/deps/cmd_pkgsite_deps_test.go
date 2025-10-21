@@ -18,6 +18,7 @@ var allowedModDeps = map[string]bool{
 	"github.com/google/licensecheck": true,
 	"github.com/google/safehtml":     true,
 	"golang.org/x/mod":               true,
+	"github.com/goplus/xgo":          true,
 	"golang.org/x/net":               true,
 	"golang.org/x/pkgsite":           true,
 	"golang.org/x/sync":              true,
@@ -41,7 +42,6 @@ func TestCmdPkgsiteDeps(t *testing.T) {
 			t.Fatalf("running go list -test -deps on package golang.org/x/pkgsite/cmd/pkgsite:\n%s", ee.Stderr)
 		}
 		t.Fatalf("running go list -test -deps on package golang.org/x/pkgsite/cmd/pkgsite: %v", err)
-
 	}
 	pkgs := strings.Fields(string(out))
 	for _, pkg := range pkgs {
